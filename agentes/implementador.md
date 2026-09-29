@@ -80,6 +80,7 @@ Para uma mudança em produção (migration, correção de dados, publicar ou rem
 2. **Mexe em dados existentes?** A própria migration guarda uma cópia das linhas que vai alterar ou apagar (tabela de backup com data no nome) antes de alterar.
 3. **Os números**, contados agora em produção, só lendo: quantas linhas ela afeta, alguns exemplos.
 4. **Como conferir** que deu certo e **como voltar atrás**.
+5. **Função do servidor:** a pasta onde ela está pronta e testada, e a declaração de login dela no `supabase/config.toml` (`verify_jwt` explícito; função nova sem isso não está pronta). Quem publica é o Tech Lead, pelo comando oficial do projeto (`publicar_funcao` no `.claude/konoha.json`). Nunca escreva um comando de publicar para o dono rodar.
 
 Se, mesmo assim, as instruções mandarem você aplicar e a trava bloquear, pare e devolva: não tente contornar.
 

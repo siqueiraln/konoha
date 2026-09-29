@@ -135,6 +135,16 @@ Nunca: aplicar sem o "pode" daquela migration; juntar várias mudanças num "pod
 
 ---
 
+### 4.2 Publicar função do servidor
+
+Publicar função é a mudança em produção mais comum e a que mais se perdia: cada conversa publicava de um jeito, o comando falhava na pasta de trabalho separada, o dono recebia o comando para rodar e perguntava qual era o certo, e função sem a exigência de login declarada entrava no ar com a configuração errada, com o deploy aparecendo como sucesso.
+
+1. **Só pelo comando oficial do projeto:** o campo `publicar_funcao` do `.claude/konoha.json` (ex.: `npm run publicar:funcao -- {nome}`), rodado **por você, na conversa principal**, a partir da pasta onde a função foi construída. Nada de ferramenta do Supabase, comando da CLI na mão ou pasta especial.
+2. **Antes do "pode":** diga ao dono, em linguagem de negócio, o que a função muda para os clientes e se ela exige login. A trava pergunta de novo, em português, com ⚠️ se a função não declara a exigência de login ou se o comando não é o oficial.
+3. **Depois:** o comando confere no ar a versão e a exigência de login. Confira a saída e conte ao dono em uma linha.
+4. **O projeto ainda não tem `publicar_funcao`:** não improvise e não mande comando ao dono. Crie a tarefa no Linear para o projeto ganhar o comando (o modelo é a STR-46 da Strong) e diga ao dono que a publicação espera por ela. Emergência que não pode esperar: publique pela ferramenta do Supabase, com a exigência de login **conferida no ar** antes (`list_edge_functions`), e registre no andamento que foi por fora.
+5. **Função nova:** o Implementador declara no `supabase/config.toml` se ela exige login (`verify_jwt` explícito), no mesmo PR que cria a função. Sem isso, o comando oficial se recusa a publicar.
+
 ## 5. Verificar, nunca confiar
 
 ### 5.1 Cada entrega

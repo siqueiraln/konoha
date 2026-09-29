@@ -90,7 +90,8 @@ Depois, no projeto onde a vila vai trabalhar:
 {
   "linear_time": "Nome do time no Linear",
   "n8n_hosts": ["dominio-do-seu-n8n.com.br"],
-  "docs": "docs/konoha"
+  "docs": "docs/konoha",
+  "publicar_funcao": "npm run publicar:funcao -- {nome}"
 }
 ```
 

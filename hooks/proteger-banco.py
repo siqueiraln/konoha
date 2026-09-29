@@ -230,6 +230,11 @@ def decidir(chamada: dict):
 
     if ferramenta in ("Bash", "PowerShell"):
         comando = entrada.get("command", "")
+        oficial = projeto.config(cwd).get("publicar_funcao") or ""
+        for trecho in trechos(comando):
+            pergunta = traduzir.publicacao_funcao(trecho, cwd, oficial)
+            if pergunta:
+                return ("ask", pergunta)
         if terminal_supabase_altera(comando):
             return (
                 "ask",

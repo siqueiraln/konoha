@@ -343,3 +343,67 @@ def script_grava_supabase(trecho: str, cwd: str):
         ):
             return nome
     return None
+
+
+# ---------------------------------------------------------------- publicar função
+
+
+def _config_toml(cwd: str):
+    atual = os.path.abspath(cwd or ".")
+    for _ in range(8):
+        caminho = os.path.join(atual, "supabase", "config.toml")
+        if os.path.isfile(caminho):
+            return caminho
+        pai = os.path.dirname(atual)
+        if pai == atual:
+            break
+        atual = pai
+    return None
+
+
+def login_declarado(nome: str, cwd: str):
+    """True/False conforme o verify_jwt de [functions.<nome>] no config.toml; None se não declarado."""
+    caminho = _config_toml(cwd)
+    if not caminho:
+        return None
+    try:
+        texto = open(caminho, encoding="utf-8", errors="ignore").read()
+    except OSError:
+        return None
+    bloco = re.search(r"^\[functions\." + re.escape(nome) + r"\]\s*$(.*?)(?=^\[|\Z)", texto, re.M | re.S)
+    if not bloco:
+        return None
+    valor = re.search(r"^\s*verify_jwt\s*=\s*(true|false)", bloco.group(1), re.M)
+    return None if not valor else valor.group(1) == "true"
+
+
+def publicacao_funcao(trecho: str, cwd: str, oficial: str = ""):
+    """Se o trecho publica uma função, devolve o texto da pergunta ao dono; senão None."""
+    prefixo = oficial.split("{nome}")[0].strip() if oficial else ""
+    nome, pelo_oficial, sem_login_na_linha = None, False, False
+    if prefixo and prefixo in trecho:
+        resto = trecho.split(prefixo, 1)[1].split()
+        nome, pelo_oficial = (resto[0] if resto else "(sem nome)"), True
+    else:
+        m = re.search(r"\bsupabase\s+functions\s+deploy\s+([\w-]+)", trecho, re.I)
+        if not m:
+            return None
+        nome = m.group(1)
+        sem_login_na_linha = "--no-verify-jwt" in trecho
+    declarado = login_declarado(nome, cwd)
+    linhas = [f"• publica no ar uma versão nova da função {nome}; a anterior para de rodar na hora"]
+    if declarado is None:
+        linhas.insert(0, "• ⚠️ a função NÃO declara no projeto se exige login: pode entrar no ar com a configuração errada")
+    elif not pelo_oficial and sem_login_na_linha != (not declarado):
+        linhas.insert(0, "• ⚠️ o comando publica " + ("SEM" if sem_login_na_linha else "COM") + " exigir login, e o projeto declara o contrário")
+    else:
+        linhas.append("• exige login: " + ("sim" if declarado else "não") + " (como está declarado no projeto)")
+    if prefixo and not pelo_oficial:
+        linhas.insert(0, f"• ⚠️ não é o comando oficial do projeto ({prefixo} <nome>): peça ao Tech Lead para usar o oficial")
+    grave = any("⚠️" in l for l in linhas)
+    fecho = (
+        "⚠️ TEM ITEM GRAVE. Na dúvida, diga não e peça ao Tech Lead para refazer pelo comando oficial."
+        if grave
+        else "Aprove se bate com o que o Tech Lead disse que ia publicar."
+    )
+    return "🔒 Publicação no ar (função do Supabase):\n" + "\n".join(linhas) + "\n\n" + fecho

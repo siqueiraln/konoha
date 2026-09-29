@@ -109,7 +109,14 @@ def montar_pasta_teste():
     """Projeto falso: uma função que grava, uma que lê e dois scripts."""
     (PASTA_TESTE / "supabase" / "migrations").mkdir(parents=True, exist_ok=True)
     (PASTA_TESTE / ".claude").mkdir(exist_ok=True)
-    (PASTA_TESTE / ".claude" / "konoha.json").write_text('{"n8n_hosts": ["automacao.exemplo.com.br"]}', encoding="utf-8")
+    (PASTA_TESTE / ".claude" / "konoha.json").write_text(
+        '{"n8n_hosts": ["automacao.exemplo.com.br"], "publicar_funcao": "npm run publicar:funcao -- {nome}"}',
+        encoding="utf-8",
+    )
+    (PASTA_TESTE / "supabase" / "config.toml").write_text(
+        'project_id = "abcdefghijklmnopqrst"\n\n[functions.aberta]\nverify_jwt = false\n\n[functions.fechada]\nverify_jwt = true\n',
+        encoding="utf-8",
+    )
     (PASTA_TESTE / "supabase" / "migrations" / "0001_teste.sql").write_text(
         "create or replace function public.funcao_teste_que_grava(x int) returns void language plpgsql as $$\n"
         "begin delete from contatos where id = x; end $$;\n"
@@ -153,9 +160,30 @@ def casos_de_traducao() -> int:
     return falhas
 
 
+def casos_de_publicacao() -> int:
+    """Publicar função: pergunta sempre, e diz em português o que importa (login, comando oficial)."""
+    falhas = 0
+    exemplos = [
+        ("npm run publicar:funcao -- aberta", "exige login: não", False),
+        ("npm run publicar:funcao -- fechada", "exige login: sim", False),
+        ("npm run publicar:funcao -- nova", "NÃO declara no projeto", True),
+        ("npx supabase functions deploy aberta --project-ref x", "não é o comando oficial", True),
+        ("npx supabase functions deploy aberta --project-ref x", "COM exigir login", True),
+        ("npx supabase functions deploy fechada --no-verify-jwt", "SEM exigir login", True),
+    ]
+    for comando, trecho, grave in exemplos:
+        r = trava.decidir({"tool_name": "PowerShell", "tool_input": {"command": comando}, "cwd": str(PASTA_TESTE)})
+        texto = r[1] if r else ""
+        if not r or r[0] != "ask" or trecho not in texto or (("GRAVE" in texto) != grave):
+            falhas += 1
+            print(f"FALHOU publicação: {comando!r} -> {r}")
+    print(f"{len(exemplos) - falhas}/{len(exemplos)} publicações certas")
+    return falhas
+
+
 def main() -> int:
     montar_pasta_teste()
-    falhas = casos_de_traducao()
+    falhas = casos_de_traducao() + casos_de_publicacao()
     for ferramenta, entrada, esperado in CASOS:
         resultado = trava.decidir({"tool_name": ferramenta, "tool_input": entrada, "cwd": str(PASTA_TESTE)})
         obtido = resultado[0] if resultado else None

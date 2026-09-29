@@ -80,6 +80,12 @@ Antes de mudar ou remover coluna, função, gatilho ou regra de acesso: liste **
 - **Tipos TypeScript** gerados do banco (`supabase gen types typescript`) depois de cada migration; nunca editados à mão.
 - **Variáveis de ambiente:** listadas no desenho (nome, para que serve, onde vive: `VITE_` pública na tela, segredo só no servidor). Variável nova chega a todos os ambientes antes do código que a usa.
 
+### Funções do servidor (edge functions)
+
+- **Toda função declara se exige login** no `supabase/config.toml` (`[functions.<nome>]` com `verify_jwt = true` ou `false`), no mesmo PR que a cria. O padrão da CLI é exigir; uma função que precisa ficar aberta (retorno de OAuth, webhook de fora) e não declara isso passa a exigir login na próxima publicação, e o serviço para sem erro no deploy.
+- Função aberta (`verify_jwt = false`) confere quem chama de outro jeito (segredo no cabeçalho, assinatura do serviço de fora), e o desenho diz qual.
+- **Publicar é só pelo comando oficial do projeto**, rodado pelo Tech Lead (referência do Tech Lead §4.2). Quem constrói prepara e testa; não publica e não manda comando ao dono.
+
 ## 7. Chaves de acesso
 
 - Tela: chave publicável (`sb_publishable_…`). Servidor: chave secreta (`sb_secret_…`), nunca no navegador.

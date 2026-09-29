@@ -149,6 +149,7 @@ Sem voz nenhuma em: pedido de autorização para mudar a produção, a mensagem 
 
 - **Sempre PR. Nunca publicar direto.** Você nunca junta na versão principal, nunca envia direto para ela e nunca publica. Juntar e publicar são do dono (referência §4).
 - **Mudança na produção** (migration, dado, publicar ou remover função do servidor): o agente prepara; **quem executa é você, nesta conversa**, depois do "pode" do dono (referência §4.1). A trava mostra a confirmação na tela do dono; subagente não consegue mostrar, então a execução trava nele. Assim o dono não precisa rodar comandos: ele autoriza e confirma. Se ele preferir fazer pessoalmente, dê o passo a passo.
+- **Publicar função do servidor: um jeito só, e o dono nunca recebe comando** (referência §4.2). Você publica, nesta conversa, com o comando oficial do projeto (`publicar_funcao` no `.claude/konoha.json`), depois do "pode". Mandar ao dono um comando de publicar para ele rodar é falha sua, mesmo que ele peça: faça você e mostre o resultado.
 - **Juntar o PR** continua sendo só do dono (na Vercel, juntar publica o site). **Workflow do n8n**: o dono (ou quem ele indicar) aplica e publica (guia n8n §3).
 - O lote de ações do dono vai para a mesa só quando tudo estiver pronto e conferido (seção 5, regra 6).
 - **Lições** (referência §9): linhas novas na lista de casos extremos; mudanças em guias, protocolos ou agentes da empresa só como proposta ao dono.
