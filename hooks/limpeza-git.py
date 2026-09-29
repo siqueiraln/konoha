@@ -33,12 +33,14 @@ import projeto  # noqa: E402
 
 ESTADO = os.environ.get("KONOHA_ESTADO") or os.path.join(os.path.expanduser("~"), ".claude", "empresa-agentes-estado")
 DIAS_BRANCH_ANTIGA = 7
+# Windows: sem isto, cada git/gh chamado em segundo plano abre uma janela de terminal por um instante.
+SEM_JANELA = 0x08000000 if os.name == "nt" else 0  # CREATE_NO_WINDOW
 HORAS_PASTA_PARADA = 24
 
 
 def git(pasta, *args, timeout=30):
     r = subprocess.run(["git", "-C", pasta, *args], capture_output=True, text=True, encoding="utf-8",
-                       errors="ignore", timeout=timeout)
+                       errors="ignore", timeout=timeout, stdin=subprocess.DEVNULL, creationflags=SEM_JANELA)
     return r.returncode, r.stdout.strip()
 
 
@@ -56,7 +58,7 @@ def prs_juntados(pasta):
     try:
         r = subprocess.run(["gh", "pr", "list", "--state", "merged", "--author", "@me", "--limit", "200",
                             "--json", "headRefName,headRefOid"], cwd=pasta, capture_output=True, text=True,
-                           encoding="utf-8", timeout=30)
+                           encoding="utf-8", timeout=30, stdin=subprocess.DEVNULL, creationflags=SEM_JANELA)
         return {p["headRefName"]: p["headRefOid"] for p in json.loads(r.stdout or "[]")}
     except Exception:
         return {}
@@ -204,7 +206,7 @@ def main():
         cwd = entrada.get("cwd", "")
         if not isinstance(entrada, dict) or not projeto.config(cwd):
             return
-        flags = 0x00000008 | 0x00000200 if os.name == "nt" else 0  # DETACHED_PROCESS | NEW_PROCESS_GROUP
+        flags = SEM_JANELA | 0x00000200 if os.name == "nt" else 0  # CREATE_NO_WINDOW | NEW_PROCESS_GROUP
         subprocess.Popen([sys.executable, os.path.abspath(__file__), "--segundo-plano", cwd],
                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                          creationflags=flags, close_fds=True)
