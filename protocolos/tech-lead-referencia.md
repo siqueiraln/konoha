@@ -270,17 +270,24 @@ O que procurar e o que fazer:
 
 ### 6.2 A barra lateral do app
 
-O dono chega a ter quatro conversas abertas. Ele acha cada uma pela barra lateral do app, então ela se arruma sozinha, pelas mesmas regras em todas as conversas:
+O dono chega a ter quatro conversas abertas e olha a barra lateral para saber **qual precisa dele agora**. Por isso o **grupo mostra o andamento** e o **título mostra o assunto**. A conversa se move sozinha a cada mudança, pelas mesmas regras em todas as conversas.
 
-| Quando | Título da conversa | Grupo |
-|---|---|---|
-| Travou a tarefa | `STR-52 · <título curto da tarefa>` | O projeto do Linear da tarefa, com o nome igual ao do Linear (ex.: `Mensageria`) |
-| Pausou, ou espera outra conversa | igual | `<projeto> · standby` |
-| Pegou a próxima tarefa da frente | troca para a nova | o da nova tarefa |
-| Done ou Canceled, e a conversa não tem mais tarefa | igual | `Feito` |
+**Título:** `<Projeto do Linear> - <assunto da tarefa em poucas palavras>` (ex.: `Agendamento - Reagendar sem apagar o anterior`). Sem tarefa ainda (pergunta, estudo): `<Projeto> - <assunto>` do mesmo jeito. Troca quando a conversa pega outra tarefa.
 
-Como: carregue as ferramentas `mcp__ccd_session_mgmt__set_session_title` e `mcp__ccd_sidebar__list_groups`, `create_group`, `move_sessions` (pelo ToolSearch) e use `"self"` para esta conversa.
-- **Antes de criar um grupo, liste os que existem.** Nome parecido já existe (`Onboarding - Empresas` para o projeto `Onboarding de empresas`): use o existente e diga ao dono, uma vez, que os nomes diferem. Nunca crie um quase-igual.
+**Grupo**, com estes nomes exatos:
+
+| Grupo | A conversa está nele quando |
+|---|---|
+| `Análise` | entendendo o pedido, discutindo com o dono, montando o plano ou o documento |
+| `Executando` | os agentes constroem, testam ou conferem; o dono não precisa fazer nada |
+| `Sua vez` | parada esperando o dono: decisão, teste, juntar PR, autorizar produção. **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá** |
+| `Stand-by` | pausada de propósito, ou esperando outra conversa ou alguém de fora |
+| `Finalizada` | terminou e não tem mais tarefa |
+
+Exemplo de caminho: Análise → Executando → Sua vez (PR pronto) → Executando (o dono juntou; você confere) → Finalizada, ou pega a próxima tarefa da frente e volta para Análise.
+
+Como: carregue `mcp__ccd_session_mgmt__set_session_title` e `mcp__ccd_sidebar__list_groups`, `create_group`, `move_sessions` (pelo ToolSearch) e use `"self"` para esta conversa. Mova **antes** de mandar a mensagem ao dono, para ele já achar a conversa no grupo certo.
+- Grupo não existe: crie com o nome exato da tabela. Nunca crie um parecido.
 - **Só mexa nesta conversa.** Mover ou renomear outra conversa pede autorização ao dono a cada vez; faça só quando ele pedir.
 - Título que o dono deu à mão: o app pergunta antes de trocar. Se ele disser não, mantenha o dele.
 - Sem essas ferramentas (terminal): pule; o resto não depende disso.
@@ -294,7 +301,7 @@ Quando o dono traz um lote de demandas (ex.: a lista que alguém do time mandou)
 2. **Frentes por área do sistema.** Duas tarefas que mexem na mesma parte do sistema (a mesma tela, as mesmas tabelas, o mesmo fluxo) vão na **mesma frente, em ordem**: em conversas diferentes, uma desfaz a outra. Áreas diferentes, frentes diferentes. Cada tarefa ganha na descrição a linha `Frente: <área> (<n> de <total>)`.
 3. Mostre ao dono as frentes numa tabela (frente, tarefas na ordem) e o pedido pronto para colar em cada conversa nova: `Frente <área> do ciclo <n>: pegue a próxima tarefa livre desta frente.`
 
-**Cada conversa de frente:** trava a primeira tarefa livre da frente, arruma a barra lateral (6.2) e trabalha só nela. Terminou (Done, ou PR aberto e nada mais a fazer até o dono juntar), solta a trava e pega a próxima da mesma frente, sem perguntar. Frente acabou: diz ao dono e vai para `Feito`.
+**Cada conversa de frente:** trava a primeira tarefa livre da frente, arruma a barra lateral (6.2) e trabalha só nela. Terminou (Done, ou PR aberto e nada mais a fazer até o dono juntar), solta a trava e pega a próxima da mesma frente, sem perguntar. Frente acabou: diz ao dono e vai para `Finalizada`.
 
 **A fila do dono:** tudo que depende dele, de todas as conversas, fica atribuído a ele no Linear com `Sua vez: <a coisa>`. Ele vê em **My issues** do Linear. Diga isso a ele uma vez, quando montar o ciclo. Enquanto espera o dono numa tarefa, a conversa não pega outra: ele volta a ela pelo título.
 

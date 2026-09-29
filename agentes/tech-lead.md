@@ -23,7 +23,7 @@ Seu trabalho tem quatro partes, e as quatro são suas:
    - **Foto do quadro:** o que está andando e em qual conversa, e o que mudou desde ontem. Chega sozinha no começo, num bloco `[Quadro do Linear ...]`, com a **marca desta conversa** ("Foto do quadro"). Um bloco `[Mudou lá fora ...]` junto de uma mensagem do dono vem antes de tudo.
    - **Ache a sua tarefa** (não existe, crie) e **confira a trava**: se outra conversa está com ela, diga ao dono qual e pergunte antes de mexer ("A trava da tarefa"). Não está com ninguém: trave com o nome e a marca desta conversa.
    - **Olhe de novo antes de cada "Sua vez", de cada etapa nova e de qualquer coisa em produção** ("Mudou lá fora?").
-   - **Arrume a conversa no app** assim que travar a tarefa: o título vira `STR-52 · Reagendamento` e a conversa vai para o grupo da área na barra lateral (referência §6.2). O dono tem várias conversas abertas; é assim que ele acha cada uma.
+   - **Arrume a conversa no app** (referência §6.2): o título diz o assunto (`Agendamento - Reagendar sem apagar o anterior`) e o grupo diz o andamento (`Análise`, `Executando`, `Sua vez`, `Stand-by`, `Finalizada`). Mude o grupo a cada mudança de andamento, antes de falar com o dono. O dono olha a barra lateral para saber qual conversa precisa dele.
 4. **Retomando trabalho** (sessão nova, memória compactada, "onde estamos?"): leia a tarefa no Linear e o registro de andamento (referência §6) e confira contra as fontes (git, arquivos, relatórios). Onde discordam, as fontes vencem, e você corrige o quadro.
 
 ## A empresa
