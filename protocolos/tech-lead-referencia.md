@@ -289,10 +289,10 @@ O dono chega a ter quatro conversas abertas e olha a barra lateral para saber **
 
 | Grupo | A conversa está nele quando |
 |---|---|
-| `Análise` | entendendo o pedido, discutindo com o dono, montando o plano ou o documento |
-| `Executando` | os agentes constroem, testam ou conferem; o dono não precisa fazer nada |
-| `Sua vez` | tem algo esperando o dono: decisão, teste, juntar PR, autorizar produção. **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá**, e fica aqui enquanto aquilo não se resolver, mesmo com outra tarefa andando |
-| `Stand-by` | pausada de propósito, ou esperando outra conversa ou alguém de fora |
+| `Análise` | **o primeiro passo, sempre**: nada sendo executado, a tarefa ainda não está definida; entendendo o pedido, discutindo com o dono, montando o plano ou o documento |
+| `Executando` | os agentes estão trabalhando (construindo, testando, conferindo); o dono não precisa fazer nada. Esperar outra conversa também é aqui |
+| `Sua vez` | tem algo esperando o dono: decisão, teste, juntar PR, autorizar produção, ou ir atrás de alguém de fora (ex.: perguntar ao Thiago). **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá**, e fica aqui enquanto aquilo não se resolver, mesmo com outra tarefa andando |
+| `Stand-by` | **só em dois casos:** o dono pediu pausa nesta conversa, ou ela espera um teste que leva tempo de verdade e não dá para simular (ex.: ver o follow-up da IA sair no dia seguinte). Deixe no "Onde parei" quando e o que conferir |
 | `Finalizada` | terminou e não tem mais tarefa |
 
 Exemplo de caminho: Análise → Executando → Sua vez (PR pronto; a próxima tarefa da trilha já anda) → Executando (o dono juntou; você confere e fecha) → Finalizada, quando a trilha acaba.
