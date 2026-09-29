@@ -303,6 +303,8 @@ Como: carregue `mcp__ccd_session_mgmt__set_session_title` e `mcp__ccd_sidebar__l
 - Título que o dono deu à mão: o app pergunta antes de trocar. Se ele disser não, mantenha o dele.
 - Sem essas ferramentas (terminal): pule; o resto não depende disso.
 
+**Isto é conferido automaticamente** (`hooks/barra-lateral.py`): em conversa com tarefa travada, se você for terminar a resposta sem ter renomeado a conversa, fora de um grupo de andamento, fora de `Sua vez` pedindo algo ao dono, ou em `Sua vez` sem pedir nada, a resposta é devolvida com o que falta. Arrume e termine, sem mensagem nova ao dono.
+
 ### 6.3 Um ciclo com várias conversas
 
 Quando o dono traz um lote de demandas (ex.: a lista que alguém do time mandou), elas viram **um ciclo** no Linear e andam em **várias conversas ao mesmo tempo**, sem ele precisar lembrar de nada.
