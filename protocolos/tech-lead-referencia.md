@@ -242,7 +242,7 @@ e o status vai para In Progress. É o que diz ao dono, e às outras conversas, q
 
 **Assumir** (só com o "assume" do dono): troque a primeira linha pela sua trava e comente `Assumida por esta conversa; a <título antigo> para aqui.` A outra conversa vê isso na próxima olhada ("Mudou lá fora?") e para.
 
-**Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a primeira linha por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`. Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
+**Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a primeira linha por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`, e deixe o comentário **Onde parei** (seção 6.3). Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
 
 **Uma conversa, uma tarefa travada** (duas no máximo, se o dono abriu as duas frentes aqui). Descoberta vai para o Backlog sem trava.
 
@@ -267,6 +267,56 @@ O que procurar e o que fazer:
 **Ao retomar:** tire a foto do quadro, confira a trava, leia a tarefa e os comentários, depois o andamento, e confira contra as fontes. Se o quadro estiver errado, as fontes vencem: corrija o quadro.
 
 **Sem o conector do Linear** na sessão: siga só com o andamento e diga ao dono, uma vez, que o quadro não foi atualizado.
+
+### 6.2 A barra lateral do app
+
+O dono chega a ter quatro conversas abertas. Ele acha cada uma pela barra lateral do app, então ela se arruma sozinha, pelas mesmas regras em todas as conversas:
+
+| Quando | Título da conversa | Grupo |
+|---|---|---|
+| Travou a tarefa | `STR-52 · <título curto da tarefa>` | O projeto do Linear da tarefa, com o nome igual ao do Linear (ex.: `Mensageria`) |
+| Pausou, ou espera outra conversa | igual | `<projeto> · standby` |
+| Pegou a próxima tarefa da frente | troca para a nova | o da nova tarefa |
+| Done ou Canceled, e a conversa não tem mais tarefa | igual | `Feito` |
+
+Como: carregue as ferramentas `mcp__ccd_session_mgmt__set_session_title` e `mcp__ccd_sidebar__list_groups`, `create_group`, `move_sessions` (pelo ToolSearch) e use `"self"` para esta conversa.
+- **Antes de criar um grupo, liste os que existem.** Nome parecido já existe (`Onboarding - Empresas` para o projeto `Onboarding de empresas`): use o existente e diga ao dono, uma vez, que os nomes diferem. Nunca crie um quase-igual.
+- **Só mexa nesta conversa.** Mover ou renomear outra conversa pede autorização ao dono a cada vez; faça só quando ele pedir.
+- Título que o dono deu à mão: o app pergunta antes de trocar. Se ele disser não, mantenha o dele.
+- Sem essas ferramentas (terminal): pule; o resto não depende disso.
+
+### 6.3 Um ciclo com várias conversas
+
+Quando o dono traz um lote de demandas (ex.: a lista que alguém do time mandou), elas viram **um ciclo** no Linear e andam em **várias conversas ao mesmo tempo**, sem ele precisar lembrar de nada.
+
+**Montar o ciclo** (uma conversa só, a que recebeu o lote):
+1. Uma tarefa por demanda, no projeto certo, no ciclo atual. Demandas que só fazem sentido juntas viram uma tarefa. O que depende de decisão de alguém de fora vira tarefa com a pergunta escrita e atribuída ao dono.
+2. **Frentes por área do sistema.** Duas tarefas que mexem na mesma parte do sistema (a mesma tela, as mesmas tabelas, o mesmo fluxo) vão na **mesma frente, em ordem**: em conversas diferentes, uma desfaz a outra. Áreas diferentes, frentes diferentes. Cada tarefa ganha na descrição a linha `Frente: <área> (<n> de <total>)`.
+3. Mostre ao dono as frentes numa tabela (frente, tarefas na ordem) e o pedido pronto para colar em cada conversa nova: `Frente <área> do ciclo <n>: pegue a próxima tarefa livre desta frente.`
+
+**Cada conversa de frente:** trava a primeira tarefa livre da frente, arruma a barra lateral (6.2) e trabalha só nela. Terminou (Done, ou PR aberto e nada mais a fazer até o dono juntar), solta a trava e pega a próxima da mesma frente, sem perguntar. Frente acabou: diz ao dono e vai para `Feito`.
+
+**A fila do dono:** tudo que depende dele, de todas as conversas, fica atribuído a ele no Linear com `Sua vez: <a coisa>`. Ele vê em **My issues** do Linear. Diga isso a ele uma vez, quando montar o ciclo. Enquanto espera o dono numa tarefa, a conversa não pega outra: ele volta a ela pelo título.
+
+**Formatos fixos** (sempre iguais, para ele reconhecer de relance):
+
+Quando ele pergunta como está o ciclo:
+```
+Ciclo <n>: <x> de <y> prontas.
+  <Frente>: fazendo <tarefa>. Depois: <próxima>.
+  <Frente>: esperando você (<a coisa>).
+Com você: <lista curta das atribuídas a ele, ou "nada">
+```
+
+Comentário **Onde parei**, na tarefa, a cada pausa ou troca de conversa (é o que ele lê dias depois para continuar):
+```
+Pronto: <o que já funciona, em uma linha>
+Falta: <o que falta>
+Próximo passo: <a primeira coisa a fazer ao voltar>
+— <título desta conversa> · <marca>
+```
+
+Achado no caminho: o formato 🐞 da seção 5 do agente.
 
 ## 7. Recuperação
 
