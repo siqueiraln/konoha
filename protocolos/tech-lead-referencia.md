@@ -10,6 +10,7 @@ Lida por seção, quando o passo pede. Caminhos da empresa: `~/.claude/empresa-a
 - "Onde estamos?": responda do quadro do Linear e do registro de andamento (seção 6), conferindo o que for incerto.
 - Sobre o sistema: **Pesquisador**, tipo "sistema atual", uma pergunta por chamada. Pergunta com várias camadas vira várias chamadas.
 - Pergunta é pedido de informação, não autorização para mexer. Se a resposta revelar algo que vale fazer, proponha e espere o ok.
+- **Pergunta não cria tarefa no Linear nem move a conversa na barra lateral.** Virou algo a fazer (o dono disse "faz"): aí nasce a tarefa e a conversa entra em `Análise`.
 
 ### 1.2 Conserto pontual (um defeito, sem decisão de produto)
 
@@ -200,7 +201,7 @@ O dono acompanha tudo pelo Linear, não pelas conversas. Sem o quadro, cada conv
 | Canceled | o dono desistiu, ou foi absorvida por outra tarefa (diga qual no comentário) |
 
 **Quando escrever** (um comentário curto, no idioma do dono, só nestes marcos):
-1. **Começo ou retomada:** tire a foto do quadro, ache a tarefa (`list_issues` com `query`) e confira a trava, antes de qualquer outra coisa. Não achou: crie no projeto certo. Toda conversa fica presa a uma tarefa.
+1. **Começo ou retomada de trabalho:** tire a foto do quadro, ache a tarefa (`list_issues` com `query`) e confira a trava, antes de qualquer outra coisa. Não achou: crie no projeto certo. Toda conversa **com trabalho** fica presa a uma tarefa; pergunta não (§1.1).
 2. **Entrega conferida** de uma etapa que o dono veria (documento pronto, fatia aprovada pelo Revisor, PR aberto com o link).
 3. **Decisão do dono**, com o que foi decidido em uma linha.
 4. **Pausa ou bloqueio**, com o que falta para voltar.
@@ -244,7 +245,7 @@ e o status vai para In Progress. É o que diz ao dono, e às outras conversas, q
 
 **Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a primeira linha por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`, e deixe o comentário **Onde parei** (seção 6.3). Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
 
-**Uma conversa, uma tarefa travada** (duas no máximo, se o dono abriu as duas frentes aqui). Descoberta vai para o Backlog sem trava.
+**Uma conversa, uma tarefa travada.** Duas no máximo: se o dono abriu duas frentes aqui, ou numa trilha, a que espera ele juntar o PR e a próxima (§6.3). Descoberta vai para o Backlog sem trava.
 
 #### Mudou lá fora?
 
@@ -262,7 +263,7 @@ O que procurar e o que fazer:
 
 **A mesa no quadro:** quando algo vai para a mesa do dono (seção 5 do agente), atribua a tarefa a ele e comente `Sua vez: <a coisa>`. Quando ele resolver, tire a atribuição. Tarefa atribuída ao dono é sempre coisa dele para fazer agora: fila não se atribui. Emergência aberta também vai atribuída, com prioridade Urgente.
 
-**Descoberta:** o que aparecer no caminho e não for da frente atual vira tarefa no **Backlog** do projeto certo, com uma linha de por quê e a sessão de origem. Não abre frente e não entra na mensagem ao dono, a não ser que seja grave. É assim que a fila de propostas deixa de se perder.
+**Descoberta:** o que aparecer no caminho e não for da tarefa atual vira tarefa no **Backlog** do projeto certo, com uma linha de por quê e a sessão de origem. Não abre frente; ao dono vão só as duas linhas 🐞 (seção 5 do agente), e grave vira emergência. É assim que a fila de propostas deixa de se perder.
 
 **Ao retomar:** tire a foto do quadro, confira a trava, leia a tarefa e os comentários, depois o andamento, e confira contra as fontes. Se o quadro estiver errado, as fontes vencem: corrija o quadro.
 
@@ -272,7 +273,7 @@ O que procurar e o que fazer:
 
 O dono chega a ter quatro conversas abertas e olha a barra lateral para saber **qual precisa dele agora**. Por isso o **grupo mostra o andamento** e o **título mostra o assunto**. A conversa se move sozinha a cada mudança, pelas mesmas regras em todas as conversas.
 
-**Título:** `<Projeto do Linear> - <assunto da tarefa em poucas palavras>` (ex.: `Agendamento - Reagendar sem apagar o anterior`). Sem tarefa ainda (pergunta, estudo): `<Projeto> - <assunto>` do mesmo jeito. Troca quando a conversa pega outra tarefa.
+**Título:** `<Projeto do Linear> - <assunto da tarefa em poucas palavras>` (ex.: `Agendamento - Reagendar sem apagar o anterior`). Troca quando a conversa pega outra tarefa. Conversa só de pergunta não é mexida (nem título, nem grupo).
 
 **Grupo**, com estes nomes exatos:
 
@@ -280,11 +281,11 @@ O dono chega a ter quatro conversas abertas e olha a barra lateral para saber **
 |---|---|
 | `Análise` | entendendo o pedido, discutindo com o dono, montando o plano ou o documento |
 | `Executando` | os agentes constroem, testam ou conferem; o dono não precisa fazer nada |
-| `Sua vez` | parada esperando o dono: decisão, teste, juntar PR, autorizar produção. **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá** |
+| `Sua vez` | tem algo esperando o dono: decisão, teste, juntar PR, autorizar produção. **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá**, e fica aqui enquanto aquilo não se resolver, mesmo com outra tarefa andando |
 | `Stand-by` | pausada de propósito, ou esperando outra conversa ou alguém de fora |
 | `Finalizada` | terminou e não tem mais tarefa |
 
-Exemplo de caminho: Análise → Executando → Sua vez (PR pronto) → Executando (o dono juntou; você confere) → Finalizada, ou pega a próxima tarefa da frente e volta para Análise.
+Exemplo de caminho: Análise → Executando → Sua vez (PR pronto; a próxima tarefa da trilha já anda) → Executando (o dono juntou; você confere e fecha) → Finalizada, quando a trilha acaba.
 
 Como: carregue `mcp__ccd_session_mgmt__set_session_title` e `mcp__ccd_sidebar__list_groups`, `create_group`, `move_sessions` (pelo ToolSearch) e use `"self"` para esta conversa. Mova **antes** de mandar a mensagem ao dono, para ele já achar a conversa no grupo certo.
 - Grupo não existe: crie com o nome exato da tabela. Nunca crie um parecido.
@@ -298,20 +299,20 @@ Quando o dono traz um lote de demandas (ex.: a lista que alguém do time mandou)
 
 **Montar o ciclo** (uma conversa só, a que recebeu o lote):
 1. Uma tarefa por demanda, no projeto certo, no ciclo atual. Demandas que só fazem sentido juntas viram uma tarefa. O que depende de decisão de alguém de fora vira tarefa com a pergunta escrita e atribuída ao dono.
-2. **Frentes por área do sistema.** Duas tarefas que mexem na mesma parte do sistema (a mesma tela, as mesmas tabelas, o mesmo fluxo) vão na **mesma frente, em ordem**: em conversas diferentes, uma desfaz a outra. Áreas diferentes, frentes diferentes. Cada tarefa ganha na descrição a linha `Frente: <área> (<n> de <total>)`.
-3. Mostre ao dono as frentes numa tabela (frente, tarefas na ordem) e o pedido pronto para colar em cada conversa nova: `Frente <área> do ciclo <n>: pegue a próxima tarefa livre desta frente.`
+2. **Trilhas por área do sistema.** Trilha é a fila de tarefas de uma área, feita por uma conversa, em ordem (não confundir com frente, que é um trabalho andando). Duas tarefas que mexem na mesma parte do sistema (a mesma tela, as mesmas tabelas, o mesmo fluxo) vão na **mesma trilha**: em conversas diferentes, uma desfaz a outra. Áreas diferentes, trilhas diferentes. Cada tarefa ganha na descrição a linha `Trilha: <área> (<n> de <total>)`.
+3. Mostre ao dono as trilhas numa tabela (trilha, tarefas na ordem) e o pedido pronto para colar em cada conversa nova: `Trilha <área> do ciclo <n>: pegue a próxima tarefa livre desta trilha.`
 
-**Cada conversa de frente:** trava a primeira tarefa livre da frente, arruma a barra lateral (6.2) e trabalha só nela. Terminou (Done, ou PR aberto e nada mais a fazer até o dono juntar), solta a trava e pega a próxima da mesma frente, sem perguntar. Frente acabou: diz ao dono e vai para `Finalizada`.
+**Cada conversa de trilha:** trava a primeira tarefa livre da trilha, arruma a barra lateral (6.2) e trabalha só nela. Tarefa com PR aberto e nada mais a fazer até o dono juntar: **continua travada por esta conversa** (atribuída ao dono, `Sua vez: juntar o PR`) e a conversa trava também a próxima tarefa da trilha e segue, sem perguntar. São no máximo duas travadas: a que espera o dono e a que anda. Quando o dono avisar que juntou, confira no sistema real, marque Done e solte a trava. A segunda tarefa não passa de PR aberto enquanto a primeira espera: se as duas pararem esperando o dono, a conversa espera também. Trilha acabou: diz ao dono e vai para `Finalizada`.
 
-**A fila do dono:** tudo que depende dele, de todas as conversas, fica atribuído a ele no Linear com `Sua vez: <a coisa>`. Ele vê em **My issues** do Linear. Diga isso a ele uma vez, quando montar o ciclo. Enquanto espera o dono numa tarefa, a conversa não pega outra: ele volta a ela pelo título.
+**A fila do dono:** tudo que depende dele, de todas as conversas, fica atribuído a ele no Linear com `Sua vez: <a coisa>`. Ele vê em **My issues** do Linear. Diga isso a ele uma vez, quando montar o ciclo. **Enquanto houver algo esperando o dono, a conversa fica no grupo `Sua vez`**, mesmo com outra tarefa andando: é o que ele olha.
 
 **Formatos fixos** (sempre iguais, para ele reconhecer de relance):
 
 Quando ele pergunta como está o ciclo:
 ```
 Ciclo <n>: <x> de <y> prontas.
-  <Frente>: fazendo <tarefa>. Depois: <próxima>.
-  <Frente>: esperando você (<a coisa>).
+  <Trilha>: fazendo <tarefa>. Depois: <próxima>.
+  <Trilha>: esperando você (<a coisa>).
 Com você: <lista curta das atribuídas a ele, ou "nada">
 ```
 
