@@ -1,6 +1,21 @@
 # Protocolo de Comunicação
 
-Vale para todos os agentes da empresa. Cinco regras: quando perguntar, como falar, quanto testar, em que acreditar e como trabalhar em equipe.
+Vale para todos os agentes da empresa. Antes de tudo, o foco. Depois, cinco regras: quando perguntar, como falar, quanto testar, em que acreditar e como trabalhar em equipe.
+
+---
+
+## 0. Foco: só o que o pedido precisa
+
+O trabalho é entregar o que o dono pediu, não achar problema no produto. Num produto com anos de código sempre há o que melhorar; se cada achado virar trabalho, o pedido nunca termina. (Decisão do dono, 30/09/2026.)
+
+- **O que já funciona não se mexe.** Nem na mesma tarefa, nem "já que eu estava aqui". Vale para código, banco, funções do servidor e workflows do n8n.
+- **Coisa antiga vista no caminho: ignore.** Não conserte, não anote no Linear, não ponha no relatório, não pergunte ao dono, não volte ao assunto. Se não impede o pedido de funcionar, não é trabalho desta tarefa.
+- **O plano tem só o que o dono pediu.** Defeito antigo achado na pesquisa ou no planejamento não vira item nem tarefa.
+- **Porta nova que a própria mudança abre** (a coisa nova deixaria alguém pegar dado de cliente, senha, chave ou dinheiro):
+  - **conserto pequeno** (cabe na mesma tarefa, até uns 30 minutos): conserte e conte ao dono em uma linha;
+  - **conserto grande**: não conserte sozinho. O Tech Lead pergunta ao dono **uma vez**, com o custo: **agora** (atrasa a entrega em X), **depois** (entrega e o conserto vira tarefa dele no Linear) ou **nunca** (entrega assim, o dono assume). Com a recomendação numa frase: o que pode dar errado e para quem.
+- **Achado baixo ou opcional não gera rodada nova.** Uma linha no relatório, e segue.
+- **Única exceção ao "ignore": vazamento acontecendo agora** (dado de cliente saindo, alguém invadindo neste momento, segredo publicado na internet). Vai ao dono na hora, como emergência (`avisos.md`). Risco que ainda não aconteceu não é emergência.
 
 ---
 
@@ -104,15 +119,30 @@ A máquina do dono é uma só, e várias conversas dividem ela. A bateria inteir
 - **Nunca a bateria inteira na máquina** (`npm test`, executor de testes sem arquivo e sem `--changed`). Rodar milhares de testes de coisas que a mudança não toca não prova nada sobre a mudança.
 - **Checagem de tipos (`tsc`): uma vez por entrega**, antes do relatório, não a cada ajuste.
 - **A bateria inteira roda no CI do projeto**, a cada PR, fora da máquina do dono. Ela pega o que os "afetados" não seguem: configuração, bibliotecas instaladas, arquivo de preparação dos testes.
-- **Projeto sem CI:** avise o dono no relatório (achado de severidade alta; o agente de Testes já propõe como montar), a menos que o `.claude/konoha.json` do projeto tenha o campo `"ci"` com a decisão do dono. Enquanto não houver, a bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
+- **Projeto sem CI:** é decisão do dono; não se relata. A bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
 
-### Tamanho do teste conforme o risco
+### Banco local: um só por projeto
 
-| A mudança mexe em... | Teste |
-|---|---|
-| Texto, cor, layout, ajuste pequeno | Uma checagem rápida de que aparece certo |
-| Uma funcionalidade comum | Os testes da funcionalidade, uma vez |
-| Dinheiro, dados de cliente, login, permissões, algo que apaga dados | Teste completo, com os casos de erro |
+Cada banco local ligado ocupa memória e processador da máquina do dono, e ninguém lembra de desligar o que outro criou.
+
+- **Um banco local por projeto, sempre o mesmo**, registrado no `.claude/konoha.json` do projeto, campo `banco_local`: `{"pasta": "<onde fica>", "nome": "<nome do banco>"}`. Todo agente usa esse. **Proibido criar outro** (outra pasta, outro `project_id`, `docker run` de Postgres solto).
+- **Não tem o campo:** o agente para as partes de banco e devolve (BLOQUEADO: "sem banco local registrado"). Quem monta é o Tech Lead, uma vez, e registra.
+- **Reaproveite, não recrie.** Ligue com `supabase start` na pasta registrada. Cada teste cria os próprios dados, com identificadores novos, e não apaga o banco. Montar do zero (`supabase db reset`) só quando a tarefa muda a estrutura do banco (migration nova).
+- **Terminou, desligue:** `supabase stop` na pasta registrada, **sem** `--no-backup` (isso apaga os dados). Se esquecer, o vigia automático desliga depois de 2 horas sem uso.
+
+### Pistas: quem confere depende do risco
+
+O Tech Lead põe cada tarefa numa pista **antes de começar** e diz qual nas instruções de cada agente. Na dúvida entre duas, a mais leve; sobe de pista só se a tarefa passar a mexer no que a pista de cima cobre.
+
+| Pista | A tarefa mexe em... | Quem trabalha e confere |
+|---|---|---|
+| **Rápida** | Só tela: texto, cor, layout, componente que só mostra | Implementador, com um teste rápido de que aparece certo. Sem Arquiteto, Testes, Security ou Revisor. |
+| **Normal** | Funcionalidade comum, sem mudar banco, permissão ou função do servidor | Implementador (testes da funcionalidade, uma vez) + Revisor (uma leitura). |
+| **Completa** | Banco, permissão, função do servidor, dinheiro, dado de cliente, algo que apaga dados | Arquiteto + Security (uma vez, **no desenho**, antes de construir) + Implementador + Testes + Revisor. |
+
+- **Prova de quebrar o código de propósito (mutação): só na pista completa, e só pelo agente de Testes.** O Implementador não repete.
+- **Devolução:** quem conferiu reconfere **só o que devolveu**, não a entrega inteira de novo.
+- **Travar a entrega só pelo que a mudança criou** e que impede o pedido de funcionar (ou abre porta nova, seção 0). O resto é uma linha no relatório.
 
 ### Ao terminar, diga em uma linha
 

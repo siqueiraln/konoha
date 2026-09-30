@@ -72,6 +72,7 @@ A lição mais cara da vila: agente esquece regra, mesmo explícita. O que impor
 - **📋 Quadro do Linear** ([`quadro-linear.py`](hooks/quadro-linear.py)): toda conversa começa sabendo o que está andando e em qual outra conversa, e fica sabendo quando algo muda lá fora. Tarefa pega por uma conversa fica travada com o nome dela.
 - **🗂️ Barra lateral** ([`barra-lateral.py`](hooks/barra-lateral.py)): a conversa com tarefa não termina a resposta com a barra desatualizada. Título com o assunto, grupo com o andamento, e `Sua vez` quando está esperando o dono.
 - **🧹 Limpeza** ([`limpeza-git.py`](hooks/limpeza-git.py)): PR juntado não deixa pasta de trabalho nem branch para trás, no computador e no GitHub. Só apaga o que tem certeza de estar na versão principal e sem trabalho pendente.
+- **💤 Vigia do banco local** ([`vigia-banco.py`](hooks/vigia-banco.py)): banco local parado há mais de 2 horas é desligado sozinho. Desligar não apaga dados.
 - **🧪 Testes e replay**: cada gancho tem teste, e o [`replay-trava.py`](hooks/replay-trava.py) roda a trava nas chamadas reais das conversas antes de qualquer mudança, para ela não encher o dono de perguntas.
 
 ## Instalar

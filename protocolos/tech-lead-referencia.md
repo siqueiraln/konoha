@@ -18,33 +18,35 @@ Só entra aqui **um** defeito, com causa conhecida ou fácil de achar, que não 
 
 1. **Causa antes do conserto:** Pesquisador (sistema atual) ou o Implementador em modo depuração (hipóteses, uma de cada vez). Qual o mecanismo? Onde mais ele vive?
 2. **É conserto ou é mudança de regra?** Se o "bug" é o sistema fazendo o que foi decidido, é mudança de regra: vai para o PO (fluxo 1.3, pequeno).
-3. **Implementador:** teste que reproduz o bug (vermelho) → conserto → verde. O conserto vai na causa, e nos irmãos com o mesmo defeito.
-4. **Security** (modo 2) se toca permissão, dados de cliente, segredo ou entrada de fora. **Testes** se toca permissão, banco ou fluxo de tela.
-5. **Revisor**, sempre. Nenhuma mudança é pequena demais.
+3. **Pista** (protocolo de comunicação, "Pistas"): rápida, normal ou completa.
+4. **Implementador:** teste que reproduz o bug (vermelho) → conserto → verde. O conserto vai na causa; os irmãos com o mesmo defeito só se o dono pediu.
+5. **Conferência conforme a pista:** rápida, nenhuma; normal, Revisor; completa, Security (no desenho do conserto, antes), Testes e Revisor.
 6. **Docs**, se algo documentado mudou.
 7. Bug que escapou da lista de casos extremos: acrescente a linha.
 8. PR (seção 4).
 
 ### 1.3 Projeto (algo novo, ou mudança de regra de negócio)
 1. **PO**, modo 1: documento de projeto.
-2. **Construtor de teste:** um Implementador lê o documento **como se fosse construir**, sem escrever código, e devolve tudo que o impediria de construir sem perguntar. Achados → **PO**, modo 2. Repita até o construtor não ter achado de regra de negócio.
+2. **Construtor de teste:** um Implementador lê o documento **como se fosse construir**, sem escrever código, e devolve só o que o **impediria** de construir sem perguntar (regra de negócio faltando ou contraditória). Não é revisão do produto: coisa antiga, melhoria e detalhe de implementação ficam de fora. Achados → **PO**, modo 2. **Uma rodada**; segunda só se a primeira mudou regra de negócio.
 3. **Dono aprova o documento** (partes 1 a 4). É a última porta barata para ele corrigir a regra.
 4. **Designer**, modo 3: `telas.md` (e manual de estilo antes, se o projeto não tem). Esboços das telas decisivas → dono aprova.
 5. **Arquiteto**, chamada 1: a costura.
 6. **Security**, modo 1: revisa a costura. Achados → Arquiteto.
 7. **Arquiteto**, uma chamada por parte que precisar de detalhe.
 8. **Linha de base** (seção 5.3), uma vez, antes da primeira fatia.
-9. Para cada fatia, na ordem do `tecnico.md` (independentes em paralelo, seção 3):
+9. Para cada fatia, na ordem do `tecnico.md` (independentes em paralelo, seção 3), conforme a pista dela (protocolo de comunicação, "Pistas"):
    1. **Implementador**;
-   2. **Security** (modo 2) e **Testes**, em paralelo;
-   3. achados → Implementador → de volta a quem achou;
-   4. **Revisor**;
-   5. **Docs** (modo 1).
+   2. pista completa: **Testes**; o Security já olhou no desenho (passo 6) e só volta se a fatia saiu do desenho;
+   3. achados que travam → Implementador → quem achou reconfere **só o que devolveu**;
+   4. pistas normal e completa: **Revisor**;
+   5. **Docs** (modo 1), se algo documentado mudou.
 10. **Verificação final do projeto:** a história recontada roda de ponta a ponta; o teste de resultado da parte 1 passa; todos os critérios de aceite com teste (Testes, ponta a ponta completo; Revisor, o projeto inteiro).
 11. **Docs**, modo 2: notas de versão.
 12. PR pronto (seção 4) e aviso ao dono.
 
-Projeto pequeno (poucas telas, sem tabela nova) pode juntar passos: o PO escreve curto, o Arquiteto faz a costura e o detalhe numa chamada. **Nunca pula:** documento aprovado pelo dono, teste antes do código, Security quando toca permissão, Revisor.
+Projeto pequeno (poucas telas, sem tabela nova) pode juntar passos: o PO escreve curto, o Arquiteto faz a costura e o detalhe numa chamada. **Nunca pula:** documento aprovado pelo dono, teste antes do código, e a conferência que a pista pede.
+
+Os passos 4 a 7 são da pista completa. Projeto só de tela pula Arquiteto e Security; o Designer entra se há tela nova.
 
 ### 1.4 Auditoria (olhar um produto que já existe)
 - Falhas de desenvolvimento (código, banco, regras): **Revisor**, lendo a área inteira (não só uma mudança), e **Pesquisador**, tipo sistema atual, para o que depende do banco real.
@@ -196,15 +198,16 @@ O dono acompanha tudo pelo Linear, não pelas conversas. Sem o quadro, cada conv
 **Onde:** o time do produto, no campo `linear_time` do `.claude/konoha.json` do projeto (sem ele, descubra com `list_teams` e peça ao dono para registrar). Os projetos do Linear são as frentes contínuas do produto (`list_projects`). Um projeto da empresa (documento de projeto) ou um conserto é **uma tarefa** dentro do projeto do Linear que combina, com subtarefas só se o dono precisar enxergar as partes.
 
 **A tarefa:**
-- Título no idioma do dono, com a regra 7 da mesa (zero conversa interna).
-- Descrição de 2 a 5 linhas: o que é e por quê, onde está o documento de projeto e o andamento, e a linha `Sessão: <título da conversa>` (de onde veio). Enquanto uma conversa trabalha nela, a primeira linha é a trava (abaixo).
+- **Título: a frase que o dono mandaria no WhatsApp para o sócio ou o cliente dizendo o que ficou pronto.** Formato `<Área do produto>: <o que muda para quem usa>` (ex.: `Kanban: atividade da etapa aparece em todos os negócios da etapa`). Sem nome de agente, sem apelido interno ("trilho", "virada", "porta", "toque", "D+7", "foto"), sem horário solto, sem nome de arquivo ou tabela.
+- **Só trabalho do produto.** Tarefa sobre o jeito da Konoha trabalhar (agentes, travas, processo) não entra no quadro do produto; é assunto da conversa da Konoha.
+- Descrição de 2 a 5 linhas, na mesma língua do título: o que é e por quê, onde está o documento de projeto e o andamento, e a linha `Sessão: <título da conversa>` (de onde veio). Enquanto uma conversa trabalha nela, a primeira linha é a trava (abaixo).
 - Prioridade: Urgente só para emergência aberta (`avisos.md`, "grave"); Alta para o que trava cliente ou virada; o resto Média ou Baixa.
 - **Nada sensível:** o Linear é um serviço de fora. Nome de empresa cliente pode; dado de pessoa (telefone, nome de paciente ou contato), chave, token e conteúdo de mensagem não.
 
 **Status:**
 | Status | Quando |
 |---|---|
-| Backlog | ideia, pendência ou descoberta que ninguém abriu |
+| Backlog | ideia ou pendência que o dono mandou guardar (coisa antiga achada no caminho não entra: protocolo de comunicação, seção 0) |
 | Todo | o dono decidiu fazer; está na fila |
 | In Progress | frente andando. **No máximo duas** abertas por você (seção 3 do agente) |
 | Done | o dono juntou ou aplicou e você conferiu no sistema real |
@@ -255,8 +258,7 @@ e o status vai para In Progress. É o que diz ao dono, e às outras conversas, q
 
 **Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a primeira linha por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`, e deixe o comentário **Onde parei** (seção 6.3). Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
 
-**Uma conversa, uma tarefa travada.** Duas no máximo: se o dono abriu duas frentes aqui, ou numa trilha, a que espera ele juntar o PR e a próxima (§6.3). Descoberta vai para o Backlog sem trava.
-
+**Uma conversa, uma tarefa travada.** Duas no máximo: se o dono abriu duas frentes aqui, ou numa trilha, a que espera ele juntar o PR e a próxima (§6.3).
 #### Mudou lá fora?
 
 A foto do começo envelhece. **A cada mensagem do dono, o aviso automático olha as tarefas travadas por esta conversa** e, se algo mudou lá fora desde a última olhada (comentário de outra conversa ou do dono, trava tirada de você), entrega um bloco `[Mudou lá fora ...]` junto da mensagem. Sem mudança, não aparece nada. Esse bloco vem antes de tudo: leia e aja (abaixo) antes de responder.
@@ -273,7 +275,7 @@ O que procurar e o que fazer:
 
 **A mesa no quadro:** quando algo vai para a mesa do dono (seção 5 do agente), atribua a tarefa a ele e comente `Sua vez: <a coisa>`. Quando ele resolver, tire a atribuição. Tarefa atribuída ao dono é sempre coisa dele para fazer agora: fila não se atribui. Emergência aberta também vai atribuída, com prioridade Urgente.
 
-**Descoberta:** o que aparecer no caminho e não for da tarefa atual vira tarefa no **Backlog** do projeto certo, com uma linha de por quê e a sessão de origem. Não abre frente; ao dono vão só as duas linhas 🐞 (seção 5 do agente), e grave vira emergência. É assim que a fila de propostas deixa de se perder.
+**Descoberta:** coisa antiga que aparecer no caminho e não impedir o pedido de funcionar **não vira tarefa nem aviso** (protocolo de comunicação, seção 0). Só entram no quadro: o conserto grande de porta nova que o dono mandou para **depois**, e ideia que o dono mandou guardar. Vazamento acontecendo agora é emergência.
 
 **Ao retomar:** tire a foto do quadro, confira a trava, leia a tarefa e os comentários, depois o andamento, e confira contra as fontes. Se o quadro estiver errado, as fontes vencem: corrija o quadro.
 
@@ -341,7 +343,7 @@ Próximo passo: <a primeira coisa a fazer ao voltar>
 — <título desta conversa> · <marca>
 ```
 
-Achado no caminho: o formato 🐞 da seção 5 do agente.
+Achado no caminho: coisa antiga não vai ao dono (protocolo de comunicação, seção 0); porta nova que a mudança abre segue a seção 5 do agente.
 
 ## 7. Recuperação
 

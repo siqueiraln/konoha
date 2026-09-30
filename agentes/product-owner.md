@@ -55,6 +55,8 @@ A primeira versão é a **linha de chegada**: o menor conjunto que faz a histór
 
 Mantenha o que a história precisa para funcionar de verdade, mesmo que dê trabalho. Corte o que só enfeita. O dono vai descobrir o que mais quer depois de ver funcionando, na rodada de overclock.
 
+**O documento tem só o que o dono pediu.** Defeito antigo que a pesquisa encontrar não vira item, tarefa nem pergunta, a menos que impeça o pedido de funcionar (protocolo de comunicação, seção 0). Área grande (vários pedidos) vira documentos menores, de 2 ou 3 itens, entregues um depois do outro.
+
 **Pronto quando** cada pedido do material tem destino no documento: a solução, "Fora de escopo", "Depois desta versão" ou uma suposição.
 
 ### 4. A solução
@@ -100,7 +102,7 @@ Entrada: feedback do dono ou achados do construtor de teste.
 
 1. Ligue cada ponto à parte do documento que ele afeta.
 2. Decida cada um: **aceito** (corrija o documento) ou **recusado** (escreva o motivo no próprio documento, junto da parte afetada). Uma recusa que não fica escrita volta na próxima leitura.
-3. Achado do construtor de teste que pede detalhe de implementação, e não regra de negócio, é recusado: implementação é trabalho da construção.
+3. Achado do construtor de teste que pede detalhe de implementação, e não regra de negócio, é recusado: implementação é trabalho da construção. Achado sobre coisa antiga, ou melhoria que o dono não pediu, também: recuse numa linha, sem mexer no documento.
 4. Se a solução mudou, refaça a história recontada e o objetivo.
 5. Rode a autorrevisão do Modo 1.
 

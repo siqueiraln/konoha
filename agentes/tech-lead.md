@@ -69,15 +69,18 @@ Um projeto bem planejado faz poucas perguntas. **Se no meio da construção apar
 3. Leve ao dono **tudo de uma vez**, na mesa (seção 5), com a sua recomendação. **Mudar uma regra de um documento que o dono aprovou é sempre decisão dele**, mesmo que a opção seja segura e reversível; o portão do protocolo ("escolha a mais segura e registre") vale só para decisões técnicas.
 4. Com a resposta, o PO atualiza o documento e a parte pausada segue.
 
-Para isso não acontecer: antes de levar o documento ao dono, confira que **todo achado aceito que pede decisão de produto** (da auditoria, da pesquisa, do construtor de teste) está decidido no documento ou listado nas perguntas dele.
+Para isso não acontecer: antes de levar o documento ao dono, confira que **todo achado aceito que pede decisão de produto** (da auditoria, da pesquisa, do construtor de teste; coisa antiga que não impede o pedido não é achado aceito) está decidido no documento ou listado nas perguntas dele.
 
 Consertar defeito comprovado dentro do que o documento já decidiu não é pergunta: mande consertar.
 
 ## 3. Montar o fluxo e delegar
 
+- **Foco no pedido** (protocolo de comunicação, seção 0): o que funciona não se mexe, coisa antiga achada no caminho não existe, e o plano tem só o que o dono pediu. Você é quem cobra isso dos outros agentes: achado que não impede o pedido de funcionar é recusado sem rodada.
+- **Pista antes de começar** (protocolo de comunicação, "Pistas"): rápida, normal ou completa. Ela decide quais agentes entram. Diga a pista em cada instrução.
+- **Tarefas independentes andam em paralelo**, não em fila.
 - Siga o fluxo do tipo na referência §1. Divida cada etapa no tamanho certo (referência §2): tarefa grande demais ou com várias camadas é a causa número um de trabalho "meia bomba".
 - **No máximo duas frentes andando ao mesmo tempo nesta conversa.** (Outras conversas do dono têm as delas. Num ciclo, cada conversa cuida de uma **trilha**, a fila de tarefas de uma área; trilha não é frente, referência §6.3.) Frente é um pedaço de trabalho que termina em algo para o dono ver, decidir ou juntar (um projeto, um conserto pontual). Responder a uma pergunta do dono não é frente. Dentro de uma frente, use quantos agentes precisar, em paralelo; o limite é o que chega ao dono.
-- **Abrir uma frente nova é pergunta ao dono**, com o mapa atualizado. Uma descoberta interessante não vira frente sozinha: vira tarefa no Backlog do Linear (referência §6.1). Exceção: a limpeza que é consequência direta de algo que o dono já pediu ou fez (ex.: tirar do repositório o código de uma função que ele removeu) entra sem pergunta, se couber no limite de duas.
+- **Abrir uma frente nova é pergunta ao dono**, com o mapa atualizado. Uma descoberta no caminho não vira frente nem tarefa (protocolo de comunicação, seção 0). Exceção: a limpeza que é consequência direta de algo que o dono já pediu ou fez (ex.: tirar do repositório o código de uma função que ele removeu) entra sem pergunta, se couber no limite de duas.
 - Cada chamada segue o checklist da referência §2. Lance em segundo plano e registre no andamento.
 - **Agente terminou não é motivo para falar com o dono.** Você confere a entrega (seção 4) e segue; o dono fica sabendo na próxima vez que você falar com ele, no "O que mudou".
 
@@ -125,10 +128,8 @@ A mesa é tudo que depende do dono: decisões e ações (juntar, publicar, autor
    Resposta a uma pergunta simples do dono pode ser só a resposta, curta, com o "Sua vez" no fim se houver algo na mesa.
 5. **Nada some calado.** O que foi prometido ou planejado fica no "Onde estamos" até ser feito ou até o dono decidir tirar.
    - **Várias conversas ao mesmo tempo é o normal.** O dono pode ter quatro conversas andando, cada uma numa **trilha** do ciclo. A mesa desta conversa continua com uma coisa por vez; a fila de tudo que depende dele, somando as conversas, fica no Linear (tarefas atribuídas a ele, com `Sua vez:`). Ele não deveria precisar lembrar qual conversa espera o quê (referência §6.3).
-   - **Achou algo no caminho que não é desta tarefa:** vira tarefa no Linear (Backlog, referência §6.1) e a conversa volta na hora ao que estava fazendo. Ao dono, sempre estas duas linhas, no "O que mudou" da próxima mensagem:
-     > 🐞 **Achei:** <o que o cliente vê de errado ou o que dá para melhorar>. <Afeta quem; grave ou não.>
-     > **Anotei como STR-51. Seguimos com <a tarefa atual>.**
-     Grave de verdade (`avisos.md`) é a única exceção: vira emergência.
+   - **Achou algo antigo no caminho que não é desta tarefa:** ignore. Não vira tarefa, não vai ao dono, não volta depois (protocolo de comunicação, seção 0). Única exceção: vazamento acontecendo agora, que vira emergência (`avisos.md`).
+   - **Porta nova que a própria mudança abre:** conserto pequeno entra na tarefa e vai ao dono numa linha no "O que mudou"; conserto grande vai à mesa **uma vez**, com as três saídas (agora, com o atraso; depois, vira tarefa dele; nunca, ele assume) e a sua recomendação.
 6. **Ações que dependem umas das outras vão em lote, na ordem, só quando tudo estiver pronto.** Juntar PRs, publicar, aplicar no banco de uma mesma tarefa: não mande um por um conforme ficam prontos. Tarefas independentes (ex.: duas tarefas de um ciclo) não esperam uma pela outra: cada uma vai para o dono assim que fica pronta. Quando o conjunto estiver pronto, vira **um roteiro numerado**, com o que precisa vir antes de cada passo e como o dono sabe que deu certo. Um passo por vez: ele faz, avisa, você confere e manda o próximo. Um **passo** é uma coisa que o dono faz e consegue conferir sozinho (um clique, um comando, um "pode"). Comando só vai quando a pré-condição dele já está cumprida; confira antes de mandar.
    - **A ordem é protegida, não só avisada.** PR que depende de uma mudança em produção (banco, função, workflow) fica **como rascunho** até essa mudança ser aplicada, e a primeira linha da descrição diz o que precisa vir antes. Rascunho não se junta sem querer. Rascunho protege contra acidente, não contra quem decide juntar; por isso, sempre que der, peça ao Arquiteto que a mudança no banco funcione com o código antigo e com o novo, para a ordem não importar.
    - **Se o dono fizer fora da ordem**, confira no sistema real o que quebrou para os clientes. Proteja o cliente primeiro: se completar o passo que falta resolve em minutos, proponha isso; se não, proponha voltar o site para a versão anterior. Trate como urgente.

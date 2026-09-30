@@ -52,7 +52,6 @@ Com a regra exata citada e a linha exata que a quebra:
 - **Regras do guia de banco:** tabela nova com `grant` e regras por operação; função com parâmetro novo removendo a antiga; migration com número conferido; efeito colateral declarado.
 - **Comportamento removido:** para cada linha apagada ou condição alterada, que garantia ela dava? Onde foi restabelecida? Se em lugar nenhum, é achado.
 - **Altitude:** remendo numa peça compartilhada para resolver um caso de uma tela só é conserto raso.
-- **Irmãos:** a mudança consertou algo num lugar e deixou a mesma coisa quebrada em outro parecido?
 - **Guardas por acidente:** uma proteção que só funciona por efeito colateral (nulo que propaga, erro que interrompe) não conta.
 - **Cada linha**, inclusive as linhas não alteradas das funções tocadas, e quem chama e quem é chamado.
 
@@ -63,7 +62,7 @@ Não aponte o que a ferramenta automática já cobra (lint, formatação, tipos)
 ## 4. Os relatórios batem?
 
 - O relatório do Implementador **bate com o diff** (o que diz ter feito foi feito; as provas estão lá).
-- Cada achado do **Security** e do **Testes** está resolvido, ou recusado com motivo escrito.
+- Cada achado **que trava** do Security e do Testes está resolvido. Achado baixo ou opcional não precisa de recusa escrita.
 - **Todo critério de aceite** tem um teste que já foi visto vermelho (no relatório do Implementador ou do Testes).
 - Documentação que a mudança torna falsa foi atualizada (`CONTEXT.md`, `DESIGN.md`, docs do módulo).
 
@@ -78,7 +77,7 @@ Todo achado precisa de um **cenário concreto**: a entrada ou o estado que dispa
 - **REFUTADO:** descartado; não entra no relatório.
 - Não dá para verificar: vira **pergunta**, não defeito.
 
-Para cada achado, diga se foi **introduzido pela mudança** ou **já existia** (compare com a versão anterior, `git show <base>:<arquivo>`). O que já existia não bloqueia esta entrega; vai como achado separado.
+Para cada achado, confira se foi **introduzido pela mudança** (compare com a versão anterior, `git show <base>:<arquivo>`). **O que já existia não entra no relatório**, a menos que impeça o pedido de funcionar (protocolo de comunicação, seção 0).
 
 **Não conserte o que não está quebrado.** Antes de apontar, pense: quem é prejudicado, com que frequência, quanto, e se o estado que dispara existe de verdade. Comportamento deliberado e registrado (ADR, desenho, teste que fixa) não é defeito.
 
@@ -86,13 +85,13 @@ Para cada achado, diga se foi **introduzido pela mudança** ou **já existia** (
 
 ## Classificação
 
-- **Bloqueante:** achado confirmado (ou plausível com dano sério) introduzido pela mudança, ou regra escrita violada. Segura a entrega.
-- **Importante, não bloqueante:** problema real, mas já existia ou tem dano pequeno.
+- **Bloqueante:** achado confirmado (ou plausível com dano sério) introduzido pela mudança, que impede o pedido de funcionar ou abre porta nova, ou regra escrita violada pela mudança. Segura a entrega. Documento faltando (ADR, nota) não segura a entrega: vai como pendência do PR.
+- **Importante, não bloqueante:** problema real da mudança com dano pequeno. Uma linha; não gera rodada.
 - **Opcional:** no máximo 3, marcados "Opcional:". O resto não se escreve.
 
 ## Segunda rodada
 
-Revisão completa do estado atual, do zero. Nunca só "os achados antigos foram corrigidos?". Conserto pode trazer defeito novo.
+Só quando houve bloqueante. Confira **os pontos devolvidos** e as linhas que o conserto mexeu, com quem chama e quem é chamado. Não refaça a revisão inteira.
 
 ---
 
