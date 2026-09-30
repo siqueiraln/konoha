@@ -90,7 +90,7 @@ Se o processo de teste morre antes de rodar qualquer teste, isso é um problema 
 
 ## Execução automática
 
-Se o produto não roda a bateria completa sozinho a cada mudança enviada (não tem CI), diga isso no relatório como achado de severidade alta, com a proposta: o que rodar (tipos, lint, testes de unidade, testes de banco no banco local, ponta a ponta) e em que ordem. Quem monta é o Implementador, com o ok do dono.
+Se o produto não roda a bateria completa sozinho a cada mudança enviada (não tem CI) e o `.claude/konoha.json` dele não tem o campo `"ci"`, diga isso no relatório como achado de severidade alta, com a proposta: o que rodar (tipos, lint, testes de unidade, testes de banco no banco local, ponta a ponta) e em que ordem. Quem monta é o Implementador, com o ok do dono. Se o campo `"ci"` existe, o dono já decidiu: não repita o achado. Só volte ao assunto se um bug escapou que a bateria completa teria pegado; aí ele entra no relatório com esse fato.
 
 ## Quando algo dá errado
 

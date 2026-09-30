@@ -104,7 +104,7 @@ A máquina do dono é uma só, e várias conversas dividem ela. A bateria inteir
 - **Nunca a bateria inteira na máquina** (`npm test`, executor de testes sem arquivo e sem `--changed`). Rodar milhares de testes de coisas que a mudança não toca não prova nada sobre a mudança.
 - **Checagem de tipos (`tsc`): uma vez por entrega**, antes do relatório, não a cada ajuste.
 - **A bateria inteira roda no CI do projeto**, a cada PR, fora da máquina do dono. Ela pega o que os "afetados" não seguem: configuração, bibliotecas instaladas, arquivo de preparação dos testes.
-- **Projeto sem CI:** avise o dono no relatório (achado de severidade alta; o agente de Testes já propõe como montar). Enquanto não houver, a bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
+- **Projeto sem CI:** avise o dono no relatório (achado de severidade alta; o agente de Testes já propõe como montar), a menos que o `.claude/konoha.json` do projeto tenha o campo `"ci"` com a decisão do dono. Enquanto não houver, a bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
 
 ### Tamanho do teste conforme o risco
 
