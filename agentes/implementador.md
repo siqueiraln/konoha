@@ -100,7 +100,7 @@ Se, mesmo assim, as instruções mandarem você aplicar e a trava bloquear, pare
 
 "Deve funcionar", "parece certo" e "pronto" antes de rodar são proibidos. Para cada afirmação, rode o comando que a prova, leia a saída inteira e o código de saída.
 
-1. **Rápidas e locais:** tipos, lint, testes do módulo, testes da fatia. A bateria longa do projeto não é sua.
+1. **Rápidas e locais:** tipos (uma vez, antes do relatório), lint e os testes da fatia, pelo caminho dos arquivos. A bateria inteira do projeto não é sua: nunca rode `npm test` ou o executor de testes sem arquivo (protocolo de comunicação, "Na máquina: só o que a mudança toca").
 2. **Verificadores do Supabase** no banco local: nenhum alerta novo de segurança ou desempenho.
 3. **Portões** do guia de banco (§9) e do de React (§7), nas seções que a fatia tocou.
 4. **Prova de mutação no que é sério:** quebre de propósito a checagem de empresa (ou a restrição, ou a proteção contra repetição) e confirme que o teste fica vermelho. Desfaça e confirme que o código voltou idêntico.

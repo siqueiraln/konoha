@@ -95,6 +95,14 @@ Testar é para ganhar confiança, não para acumular rodadas. O esforço de test
 - **Falhou?** Corrija e teste de novo **só o que falhou**, mais o que a correção pode ter afetado.
 - **Três tentativas no mesmo problema sem sucesso?** Pare, registre o que tentou e escale. Não entre em ciclo.
 
+### Na máquina: só o que a mudança toca
+
+A máquina do dono é uma só, e várias conversas dividem ela. A bateria inteira de testes ocupa o processador todo e esquenta o computador.
+
+- **Testes: sempre pelo caminho dos arquivos** que a mudança afeta (ex.: `npx vitest run src/hooks/useX.test.ts`). Nunca a bateria inteira (`npm test`, executor de testes sem arquivo) durante o trabalho.
+- **Checagem de tipos (`tsc`): uma vez por entrega**, antes do relatório, não a cada ajuste.
+- **A bateria inteira roda uma vez só, no fim**, antes de abrir o PR, por quem abre o PR (o Tech Lead), em segundo plano. Nunca duas ao mesmo tempo na máquina. Se o projeto tem execução automática a cada mudança enviada (CI), ela faz esse papel e ninguém roda a bateria na máquina.
+
 ### Tamanho do teste conforme o risco
 
 | A mudança mexe em... | Teste |
