@@ -99,9 +99,12 @@ Testar é para ganhar confiança, não para acumular rodadas. O esforço de test
 
 A máquina do dono é uma só, e várias conversas dividem ela. A bateria inteira de testes ocupa o processador todo e esquenta o computador.
 
-- **Testes: sempre pelo caminho dos arquivos** que a mudança afeta (ex.: `npx vitest run src/hooks/useX.test.ts`). Nunca a bateria inteira (`npm test`, executor de testes sem arquivo) durante o trabalho.
+- **Durante o trabalho: testes pelo caminho dos arquivos** que a mudança afeta (ex.: `npx vitest run src/hooks/useX.test.ts`).
+- **Conferência final (antes do relatório e antes do PR): só os testes afetados.** O executor segue quem usa os arquivos alterados e roda só esses (ex.: `npx vitest run --changed origin/main`). Isso já pega o efeito indireto numa tela que usa o que mudou.
+- **Nunca a bateria inteira na máquina** (`npm test`, executor de testes sem arquivo e sem `--changed`). Rodar milhares de testes de coisas que a mudança não toca não prova nada sobre a mudança.
 - **Checagem de tipos (`tsc`): uma vez por entrega**, antes do relatório, não a cada ajuste.
-- **A bateria inteira roda uma vez só, no fim**, antes de abrir o PR, por quem abre o PR (o Tech Lead), em segundo plano. Nunca duas ao mesmo tempo na máquina. Se o projeto tem execução automática a cada mudança enviada (CI), ela faz esse papel e ninguém roda a bateria na máquina.
+- **A bateria inteira roda no CI do projeto**, a cada PR, fora da máquina do dono. Ela pega o que os "afetados" não seguem: configuração, bibliotecas instaladas, arquivo de preparação dos testes.
+- **Projeto sem CI:** avise o dono no relatório (achado de severidade alta; o agente de Testes já propõe como montar). Enquanto não houver, a bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
 
 ### Tamanho do teste conforme o risco
 

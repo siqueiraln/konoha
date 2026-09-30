@@ -78,7 +78,7 @@ A história recontada do projeto (parte 3 do documento) e os fluxos do `telas.md
 - fuso fixo e data de referência calculada, nunca a data de hoje escrita no teste;
 - o teste passa se rodado de novo depois de uma tentativa que morreu no meio.
 
-Na máquina, rode só os testes que a fatia afeta, pelo caminho dos arquivos. A bateria completa não é sua: nunca rode `npm test` ou o executor de testes sem arquivo (protocolo de comunicação, "Na máquina: só o que a mudança toca").
+Na máquina, rode só os testes que a fatia afeta: pelo caminho dos arquivos e, para conferir o efeito indireto, os afetados pela mudança (`--changed`). A bateria completa é do CI: nunca rode `npm test` ou o executor de testes sem arquivo (protocolo de comunicação, "Na máquina: só o que a mudança toca").
 
 ## Passo 5: instabilidade
 
