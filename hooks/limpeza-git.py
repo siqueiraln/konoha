@@ -209,7 +209,8 @@ def executar(pasta, acoes):
     feitas = []
     for tipo, alvo, motivo in acoes:
         if tipo == "pasta":
-            cod, _ = git(pasta, "worktree", "remove", alvo)
+            # confere de novo na hora: só sobras de ferramenta dentro; o --force é para o git aceitar apagá-las
+            cod, _ = (git(pasta, "worktree", "remove", "--force", alvo) if limpa(alvo) else (1, "pasta mudou"))
         elif tipo == "branch":
             cod, _ = git(pasta, "branch", "-D" if motivo in FORCAR else "-d", alvo)
         else:
