@@ -70,7 +70,7 @@ Divida o projeto em fatias **de ponta a ponta** (banco + servidor + tela de um p
 - **Consome:** o que precisa existir antes (tabela, função, hook, com o nome exato).
 - **Produz:** o que entrega (com o nome exato), e quais critérios de aceite (`CA`) do documento de projeto ela cumpre.
 
-Tamanho certo: o menor pedaço que um revisor poderia rejeitar aprovando a vizinha. Todo `CA` do documento cai em alguma fatia.
+Tamanho certo: **no máximo três fatias por tarefa**, divididas pelo lugar que muda (ex.: automação, lembrete), não por recurso. Fatia grande custa menos que esteira longa: em 09/10/2026 sete fatias para um recurso custaram uma noite (decisão do dono, 10/10/2026). Todo `CA` do documento cai em alguma fatia.
 
 ### 9. Partes que precisam de detalhe
 Liste as partes da solução que precisam de uma chamada de detalhe e as que a costura já cobre. Projeto pequeno pode não precisar de nenhuma.

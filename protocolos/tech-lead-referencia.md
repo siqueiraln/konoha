@@ -19,34 +19,29 @@ Só entra aqui **um** defeito, com causa conhecida ou fácil de achar, que não 
 1. **Causa antes do conserto:** Pesquisador (sistema atual) ou o Implementador em modo depuração (hipóteses, uma de cada vez). Qual o mecanismo? Onde mais ele vive?
 2. **É conserto ou é mudança de regra?** Se o "bug" é o sistema fazendo o que foi decidido, é mudança de regra: vai para o PO (fluxo 1.3, pequeno).
 3. **Pista** (protocolo de comunicação, "Pistas"): rápida, normal ou completa.
-4. **Implementador:** teste que reproduz o bug (vermelho) → conserto → verde. O conserto vai na causa; os irmãos com o mesmo defeito só se o dono pediu.
+4. **Implementador:** reproduza o bug (ao vivo; com teste escrito só se for permissão, data ou dinheiro) → conserto → prove que sumiu, uma vez. O conserto vai na causa; os irmãos com o mesmo defeito só se o dono pediu.
 5. **Conferência conforme a pista:** rápida, nenhuma; normal, Revisor; completa, Security (no desenho do conserto, antes), Testes e Revisor.
 6. **Docs**, se algo documentado mudou.
 7. Bug que escapou da lista de casos extremos: acrescente a linha.
 8. PR (seção 4).
 
 ### 1.3 Projeto (algo novo, ou mudança de regra de negócio)
-1. **PO**, modo 1: documento de projeto.
-2. **Construtor de teste:** um Implementador lê o documento **como se fosse construir**, sem escrever código, e devolve só o que o **impediria** de construir sem perguntar (regra de negócio faltando ou contraditória). Não é revisão do produto: coisa antiga, melhoria e detalhe de implementação ficam de fora. Achados → **PO**, modo 2. **Uma rodada**; segunda só se a primeira mudou regra de negócio.
-3. **Dono aprova o documento** (partes 1 a 4). É a última porta barata para ele corrigir a regra.
-4. **Designer**, modo 3: `telas.md` (e manual de estilo antes, se o projeto não tem). Esboços das telas decisivas → dono aprova.
-5. **Arquiteto**, chamada 1: a costura.
-6. **Security**, modo 1: revisa a costura. Achados → Arquiteto.
-7. **Arquiteto**, uma chamada por parte que precisar de detalhe.
-8. **Linha de base** (seção 5.3), uma vez, antes da primeira fatia.
-9. Para cada fatia, na ordem do `tecnico.md` (independentes em paralelo, seção 3), conforme a pista dela (protocolo de comunicação, "Pistas"):
-   1. **Implementador**;
-   2. pista completa: **Testes**; o Security já olhou no desenho (passo 6) e só volta se a fatia saiu do desenho;
-   3. achados que travam → Implementador → quem achou reconfere **só o que devolveu**;
-   4. pistas normal e completa: **Revisor**;
-   5. **Docs** (modo 1), se algo documentado mudou.
-10. **Verificação final do projeto:** a história recontada roda de ponta a ponta; o teste de resultado da parte 1 passa; todos os critérios de aceite com teste (Testes, ponta a ponta completo; Revisor, o projeto inteiro).
+1. **PO**, modo 1: documento de projeto. Vai **direto ao dono**: ninguém testa o plano (decisão do dono, 10/10/2026).
+2. **Dono aprova o documento** (partes 1 a 4). É a última porta barata para ele corrigir a regra.
+3. **Designer**, modo 3, se há tela nova: `telas.md` (e manual de estilo antes, se o projeto não tem). Esboços das telas decisivas → dono aprova.
+4. **Arquiteto**, se mexe em banco ou função do servidor: a costura e as fatias (**no máximo três**) numa chamada; uma segunda só se o projeto for grande de verdade.
+5. **Security**, modo 1, só na pista completa: revisa a costura. Achados → Arquiteto.
+6. **Linha de base** (seção 5.3), uma vez, antes da primeira fatia.
+7. **Implementador**, uma fatia por chamada, na ordem do `tecnico.md`. Cada fatia termina **provada ao vivo** (tela aberta, linha no banco local). **Nada entre as fatias**: nem Testes, nem Revisor.
+8. **No fim da tarefa, uma vez:** pista completa → **Testes** (sobre tudo o que mudou); pistas normal e completa → **Revisor** (uma leitura do todo). Achados que travam → Implementador → quem achou reconfere **só o que devolveu**, sem rodada nova de teste.
+9. **Docs** (modo 1), se algo documentado mudou.
+10. **Verificação final:** a história recontada roda de ponta a ponta no ambiente local, por quem construiu, com você olhando o resultado.
 11. **Docs**, modo 2: notas de versão.
 12. PR pronto (seção 4) e aviso ao dono.
 
-Projeto pequeno (poucas telas, sem tabela nova) pode juntar passos: o PO escreve curto, o Arquiteto faz a costura e o detalhe numa chamada. **Nunca pula:** documento aprovado pelo dono, teste antes do código, e a conferência que a pista pede.
+Projeto pequeno (poucas telas, sem tabela nova) pode juntar passos: o PO escreve curto, o Arquiteto faz tudo numa chamada. **Nunca pula:** documento aprovado pelo dono, prova ao vivo de cada fatia, e a conferência única do fim que a pista pede.
 
-Os passos 4 a 7 são da pista completa. Projeto só de tela pula Arquiteto e Security; o Designer entra se há tela nova.
+Projeto só de tela pula Arquiteto e Security. Para os botões dos lembretes de 09/10/2026 (pista normal, sem dinheiro nem permissão), este fluxo teria sido: documento, desenho, três fatias provadas ao vivo, uma lida do Revisor, PR.
 
 ### 1.4 Auditoria (olhar um produto que já existe)
 - Falhas de desenvolvimento (código, banco, regras): **Revisor**, lendo a área inteira (não só uma mudança), e **Pesquisador**, tipo sistema atual, para o que depende do banco real.

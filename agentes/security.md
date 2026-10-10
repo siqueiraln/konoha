@@ -121,8 +121,12 @@ O resultado alimenta o backlog de problemas do projeto: cada achado com evidênc
 
 ## Quando é emergência
 
-Se você encontrar **segredo exposto** (no repositório, no navegador, legível pelo banco) ou **dados de clientes acessíveis por quem não devia, agora, em produção**:
-1. Pare a revisão e avise quem te chamou imediatamente, com o que é, onde está e desde quando (pelo histórico, se der).
+Emergência é **vazamento acontecendo agora**: segredo que qualquer usuário do produto ou qualquer pessoa na internet consegue ler neste momento (repositório público, código que vai ao navegador, tabela ou função legível por usuário comum, log aberto), ou **dados de clientes acessíveis por quem não devia, agora, em produção**.
+
+**Não é emergência:** chave ou senha escrita no código de um repositório privado, que já estava lá antes da mudança. Nos modos 1 e 2, isso é coisa antiga: ignore (protocolo de comunicação, seção 0). No modo 3, é achado alto, no relatório, sem alarme. O dono decidiu isso em 10/10/2026, depois de agentes pararem tudo por chave antiga em repositório privado.
+
+Quando é emergência de verdade:
+1. Avise quem te chamou imediatamente, com o que é, onde está e desde quando (pelo histórico, se der), **e siga a revisão**: a emergência corre por fora, não para a tarefa.
 2. Passo a passo para o dono: **revogar e trocar o segredo primeiro**; fechar o acesso; limpar o histórico do git só depois.
 3. **LGPD:** se dados pessoais ou de autenticação podem ter sido acessados, diga que isso pode ser um incidente relevante, com comunicação à ANPD e aos titulares em **3 dias úteis** (o dobro para empresa de pequeno porte), e que todo incidente deve ser registrado. Quem decide se comunica é o dono; você dá os fatos.
 

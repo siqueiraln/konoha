@@ -103,6 +103,13 @@ Cada agente tem a voz do seu personagem (seção "Sua voz" no arquivo do agente)
 
 Testar é para ganhar confiança, não para acumular rodadas. O esforço de teste acompanha o risco da mudança, não o tempo disponível.
 
+**O que pega bug é rodar a coisa de verdade, uma vez: tela aberta, banco local, a linha gravada.** Decisão do dono em 10/10/2026, depois de medir: um pedido de botões nos lembretes levou 13 horas, 5h20 só de esteira (sete fatias, cada uma com Implementador, Testes e Revisor; 326 comandos de teste, 240 repetidos), e bug continua escapando mesmo assim. O produto já tinha 5 mil testes que não pegavam 7 de cada 10 bugs. Camada de conferência não substitui ver funcionando.
+
+- **Teste escrito só onde ele pega bug de verdade:** permissão entre empresas (quem vê o quê), data e fuso, dinheiro. Um teste por regra, pelo Implementador. O resto se prova rodando, não se escreve teste.
+- **Teste antes do código não é obrigação.** Construa, rode, mostre funcionando.
+- **Testes e Revisor entram uma vez por tarefa, no fim**, sobre tudo o que ela mudou. Nunca por fatia.
+- **Ninguém testa o plano.** Documento do PO vai direto ao dono.
+
 ### Regras
 
 - **Teste uma vez o que mudou.** Passou? Pare.
@@ -136,10 +143,11 @@ O Tech Lead põe cada tarefa numa pista **antes de começar** e diz qual nas ins
 
 | Pista | A tarefa mexe em... | Quem trabalha e confere |
 |---|---|---|
-| **Rápida** | Só tela: texto, cor, layout, componente que só mostra | Implementador, com um teste rápido de que aparece certo. Sem Arquiteto, Testes, Security ou Revisor. |
-| **Normal** | Funcionalidade comum, sem mudar banco, permissão ou função do servidor | Implementador (testes da funcionalidade, uma vez) + Revisor (uma leitura). |
-| **Completa** | Banco, permissão, função do servidor, dinheiro, dado de cliente, algo que apaga dados | Arquiteto + Security (uma vez, **no desenho**, antes de construir) + Implementador + Testes + Revisor. |
+| **Rápida** | Só tela: texto, cor, layout, componente que só mostra | Implementador, com a tela aberta mostrando certo. Sem Arquiteto, Testes, Security ou Revisor. |
+| **Normal** (**a pista de todo pedido**, inclusive com banco e função do servidor) | Qualquer funcionalidade, migration que acrescenta coisa, função do servidor | Arquiteto (uma chamada, só se mexe em banco ou função do servidor) + Implementador (constrói e prova ao vivo: tela e banco local) + Revisor (uma leitura, no fim da tarefa). |
+| **Completa** | Dinheiro; dado de cliente; quem vê o quê entre empresas; algo que apaga dados; ou o dono pediu "faz com cuidado" | Arquiteto + Security (uma vez, **no desenho**, antes de construir) + Implementador + Testes (uma vez, no fim da tarefa) + Revisor (uma vez, no fim). |
 
+- **No máximo três fatias por tarefa.** Fatia grande custa menos que esteira longa.
 - **Prova de quebrar o código de propósito (mutação): só na pista completa, e só pelo agente de Testes.** O Implementador não repete.
 - **Devolução:** quem conferiu reconfere **só o que devolveu**, não a entrega inteira de novo.
 - **Travar a entrega só pelo que a mudança criou** e que impede o pedido de funcionar (ou abre porta nova, seção 0). O resto é uma linha no relatório.
