@@ -83,10 +83,12 @@ def hora(dt: datetime) -> str:
 
 
 def trava(descricao: str):
-    """Primeira linha da descrição, se for uma trava; senão None."""
-    primeira = (descricao or "").strip().splitlines()[0:1]
-    if primeira and primeira[0].lstrip().startswith("🔒"):
-        return primeira[0].strip()
+    """A linha de trava da descrição (começa com 🔒), em qualquer posição; senão None.
+
+    Ela fica no bloco "Bastidores", no fim, para o dono ler primeiro o que é dele."""
+    for linha in (descricao or "").splitlines():
+        if linha.lstrip().startswith("🔒"):
+            return linha.strip()
     return None
 
 

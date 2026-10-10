@@ -62,7 +62,7 @@ caso("pasta sem konoha.json não roda", q.time_da_pasta(SEM_CONFIG) is None)
 # trava
 com_trava = f"🔒 Com a conversa [Lembretes](claude://x) · {OUTRA} · desde 29/09 10:00\nTexto\nSessão: Lembretes"
 caso("lê a trava na 1ª linha", q.marca_na(q.trava(com_trava)) == OUTRA)
-caso("trava fora da 1ª linha não conta", q.trava(f"Texto\n🔒 {OUTRA}") is None)
+caso("trava no fim (Bastidores) também conta", q.marca_na(q.trava(f"Texto do dono\n\nBastidores\n🔒 Com a conversa [X](claude://x) · {OUTRA} · desde 10/10 08:00")) == OUTRA)
 caso("descrição vazia não quebra", q.trava(None) is None and q.trava("") is None)
 
 # foto

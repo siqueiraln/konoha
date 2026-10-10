@@ -195,12 +195,14 @@ Arquivo: `docs/projetos/<nome>/andamento.md` (ou `docs/consertos/<AAAA-MM-DD>-<a
 
 O dono acompanha tudo pelo Linear, não pelas conversas. Sem o quadro, cada conversa vira uma filial com o mapa preso dentro dela, e é ele quem precisa lembrar onde cada uma parou. **Você é o único que escreve no quadro**; os outros agentes não mexem nele.
 
-**Onde:** o time do produto, no campo `linear_time` do `.claude/konoha.json` do projeto (sem ele, descubra com `list_teams` e peça ao dono para registrar). Os projetos do Linear são as frentes contínuas do produto (`list_projects`). Um projeto da empresa (documento de projeto) ou um conserto é **uma tarefa** dentro do projeto do Linear que combina, com subtarefas só se o dono precisar enxergar as partes.
+**Onde:** o time do produto, no campo `linear_time` do `.claude/konoha.json` do projeto (sem ele, descubra com `list_teams` e peça ao dono para registrar). Os projetos do Linear são as frentes contínuas do produto (`list_projects`). **O pedido é a unidade do dono.** Cada pedido do sócio ou de cliente (ex.: "configurar a cadência do Instituto Mix") é **uma tarefa-mãe** no projeto do Linear que combina. Tudo o que nasce de dentro dele para ele funcionar (virar a empresa para o sistema novo, ajustar a IA, um recurso do produto que faltava) entra como **filha** dessa mãe, nunca como tarefa irmã. Assim a lista do dono mostra uma linha por pedido com a barra "n de m feitas", e ele abre para ver os passos. A mãe fica In Progress enquanto qualquer filha anda, e só fecha quando o pedido inteiro funciona. Uma filha que serve a mais de um pedido fica na mãe de onde nasceu; cite-a nos outros com "relacionada".
 
 **A tarefa:**
 - **Título: a frase que o dono mandaria no WhatsApp para o sócio ou o cliente dizendo o que ficou pronto.** Formato `<Área do produto>: <o que muda para quem usa>` (ex.: `Kanban: atividade da etapa aparece em todos os negócios da etapa`). Sem nome de agente, sem apelido interno ("trilho", "virada", "porta", "toque", "D+7", "foto"), sem horário solto, sem nome de arquivo ou tabela.
 - **Só trabalho do produto.** Tarefa sobre o jeito da Konoha trabalhar (agentes, travas, processo) não entra no quadro do produto; é assunto da conversa da Konoha.
-- Descrição de 2 a 5 linhas, na mesma língua do título: o que é e por quê, onde está o documento de projeto e o andamento, e a linha `Sessão: <título da conversa>` (de onde veio). Enquanto uma conversa trabalha nela, a primeira linha é a trava (abaixo).
+- **Descrição em duas partes, o dono primeiro.** O dono reclamou que o quadro "não foi feito para ele": muito detalhe de agente na frente do que ele precisa. Então:
+  - **Em cima, o que é dele (1 a 3 linhas):** o que muda para quem usa, em uma frase; e, se houver, `Esperando você: <a coisa>`. Na mãe, mais uma linha `Passos: <filha> → <filha> → ...` com o que já foi feito marcado.
+  - **Embaixo, separado por `---` e o título `Bastidores`,** o que é dos agentes: a trava (abaixo), contexto técnico, caminhos de documento e andamento, e `Sessão: <título da conversa>`. O dono não precisa descer até aí; o aviso automático acha a trava em qualquer linha.
 - Prioridade: Urgente só para emergência aberta (`avisos.md`, "grave"); Alta para o que trava cliente ou virada; o resto Média ou Baixa.
 - **Nada sensível:** o Linear é um serviço de fora. Nome de empresa cliente pode; dado de pessoa (telefone, nome de paciente ou contato), chave, token e conteúdo de mensagem não.
 
@@ -241,22 +243,22 @@ Para que serve:
 
 #### A trava da tarefa
 
-Quando esta conversa começa a trabalhar numa tarefa, a **primeira linha da descrição** vira:
+Quando esta conversa começa a trabalhar numa tarefa, a **primeira linha do bloco Bastidores** (no fim da descrição) vira:
 
 `🔒 Com a conversa [<título>](<link>) · <marca> · desde <DD/MM HH:MM>`
 
 e o status vai para In Progress. É o que diz ao dono, e às outras conversas, quem está com ela.
 
-**Ao achar a tarefa, leia a primeira linha:**
+**Ao achar a tarefa, leia a linha da trava (começa com 🔒; em tarefa antiga pode estar na primeira linha):**
 - **Sem trava, ou a trava é sua:** trave (ou mantenha) e siga.
 - **Trava de outra conversa:** a foto diz se ela está ATIVA ou PARADA (pela última atividade da conversa dona da marca). Na dúvida, ou se a trava é antiga e não tem marca, procure a conversa pelo título com `list_sessions` (`isRunning`, `lastActivityAt`, arquivada):
   - **Ativa** (rodando, ou atividade nas últimas 12 h): **não mexa na tarefa.** Diga ao dono, logo na primeira resposta: "A conversa **<título>** está com essa tarefa (última atividade <hora>). Quer seguir por lá, ou que eu assuma aqui?" Até ele responder, você pode ler e pesquisar; não lança construção, não escreve no quadro, não mexe em produção.
   - **Parada** (sem atividade há mais de 12 h) ou **arquivada**: diga ao dono do mesmo jeito, trocando "está com" por "estava com, parada desde <data>". Recomende assumir.
 - **Tarefa antiga, sem trava, mas com `Sessão:` de uma conversa que ainda vive** (`list_sessions`, pelo título, atividade nas últimas 12 h): trate como trava ativa.
 
-**Assumir** (só com o "assume" do dono): troque a primeira linha pela sua trava e comente `Assumida por esta conversa; a <título antigo> para aqui.` A outra conversa vê isso na próxima olhada ("Mudou lá fora?") e para.
+**Assumir** (só com o "assume" do dono): troque a linha da trava pela sua e comente `Assumida por esta conversa; a <título antigo> para aqui.` A outra conversa vê isso na próxima olhada ("Mudou lá fora?") e para.
 
-**Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a primeira linha por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`, e deixe o comentário **Onde parei** (seção 6.3). Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
+**Soltar a trava** quando a conversa para de trabalhar na tarefa (pausa, bloqueio que depende de outra conversa, Done, Canceled, ou o dono pediu para seguir noutro lugar; esperar a resposta do dono não é pausa): troque a linha da trava por `Última conversa: [<título>](<link>) · até <DD/MM HH:MM>`, e deixe o comentário **Onde parei** (seção 6.3). Tarefa travada por uma conversa que foi embora engana o dono tanto quanto tarefa sem trava.
 
 **Uma conversa, uma tarefa travada.** Duas no máximo: se o dono abriu duas frentes aqui, ou numa trilha, a que espera ele juntar o PR e a próxima (§6.3).
 #### Mudou lá fora?
@@ -274,6 +276,8 @@ O que procurar e o que fazer:
 - **Código:** `git fetch` e veja se a `main` andou nos arquivos da sua frente desde que a branch saiu. Andou: a branch se atualiza antes da próxima fatia, e o Arquiteto confere se o desenho ainda vale.
 
 **A mesa no quadro:** quando algo vai para a mesa do dono (seção 5 do agente), atribua a tarefa a ele e comente `Sua vez: <a coisa>`. Quando ele resolver, tire a atribuição. Tarefa atribuída ao dono é sempre coisa dele para fazer agora: fila não se atribui. Emergência aberta também vai atribuída, com prioridade Urgente.
+
+**Arquivadas:** em 10/10/2026 o dono mandou arquivar o que os agentes tinham criado no meio de outras coisas (achados, pendências, furos de segurança conhecidos). Arquivar não apaga. **Quando o dono pedir para cuidar de um tema** ("vamos ver a segurança do n8n"), antes de criar tarefa nova procure nas arquivadas (`list_issues` com `includeArchived: true` e `query`), desarquive o que for daquele tema, crie a mãe no formato acima e pendure as velhas como filhas, reescritas no formato (título de WhatsApp, dono em cima, bastidores embaixo). O dono não lembra do que foi arquivado; você lembra por ele.
 
 **Descoberta:** coisa antiga que aparecer no caminho e não impedir o pedido de funcionar **não vira tarefa nem aviso** (protocolo de comunicação, seção 0). Só entram no quadro: o conserto grande de porta nova que o dono mandou para **depois**, e ideia que o dono mandou guardar. Vazamento acontecendo agora é emergência.
 
