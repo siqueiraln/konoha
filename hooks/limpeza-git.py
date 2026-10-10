@@ -19,7 +19,7 @@ de estar na versão principal e sem trabalho pendente:
 - **Pasta de trabalho sem branch** (detached) limpa, contida na principal e
   parada há mais de 1 dia: apaga a pasta.
 - Nunca: a pasta principal, a pasta onde a conversa está, pasta com qualquer
-  arquivo alterado ou novo, branch com commit que não está na principal (fora
+  arquivo alterado ou novo (fora sobras de ferramenta: deno.lock, supabase/.temp), branch com commit que não está na principal (fora
   PR seu juntado ou fechado), branch de outra pessoa no GitHub.
 
 Modos:
@@ -103,9 +103,20 @@ def contida_na_principal(pasta, ponta):
     return git(pasta, "merge-base", "--is-ancestor", ponta, "origin/main")[0] == 0
 
 
+# Sobras de ferramenta que aparecem sozinhas depois de rodar testes/CLI e não são trabalho de ninguém.
+SOBRAS = ("deno.lock", "supabase/functions/deno.lock", "supabase/.temp/")
+
+
+def e_sobra(linha):
+    caminho = linha[3:].strip().strip('"')
+    return any(caminho == s or caminho.startswith(s) for s in SOBRAS)
+
+
 def limpa(caminho):
+    """Sem arquivo alterado ou novo, fora as sobras de ferramenta (em 10/10/2026, 9 das 16 pastas que
+    sobraram no CRM estavam "sujas" só por um deno.lock)."""
     cod, saida = git(caminho, "status", "--porcelain")
-    return cod == 0 and saida == ""
+    return cod == 0 and all(e_sobra(l) for l in saida.splitlines())
 
 
 def mesma_pasta(a, b):

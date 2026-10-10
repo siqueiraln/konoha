@@ -105,8 +105,17 @@ g(repo, "worktree", "add", "-q", "-b", "feat/fatia-pendente", wt11)
 commit(wt11, "k.txt")
 os.utime(wt11, (antes, antes))
 
+# 12. PR juntado, pasta só com um deno.lock solto (sobra de ferramenta): sai
+wt12 = os.path.join(base, "wt-sobra")
+g(repo, "worktree", "add", "-q", "-b", "feat/sobra", wt12)
+ponta12 = commit(wt12, "l.txt")
+g(repo, "merge", "-q", "--no-ff", "-m", "merge12", "feat/sobra")
+g(repo, "push", "-q", "origin", "main")
+with open(os.path.join(wt12, "deno.lock"), "w") as f:
+    f.write("{}")
+
 g(repo, "fetch", "-q", "--prune", "origin")
-juntados = {"feat/juntada": ponta1, "feat/suja": ponta2, "feat/continuou": ponta3_juntada, "feat/conversa": ponta7}
+juntados = {"feat/sobra": ponta12, "feat/juntada": ponta1, "feat/suja": ponta2, "feat/continuou": ponta3_juntada, "feat/conversa": ponta7}
 fechados = {"feat/fechada": ponta8}
 acoes = L.planejar(repo, wt7, juntados, fechados)
 alvos = {(t, os.path.normcase(a) if t == "pasta" else a) for t, a, _ in acoes}
@@ -143,6 +152,7 @@ feitas = L.executar(repo, acoes)
 caso("executa tudo o que planejou", len(feitas) == len(acoes))
 caso("pasta apagada de verdade", not os.path.exists(wt1) and not os.path.exists(wt8) and not os.path.exists(wt9))
 caso("fatia pendente continua lá", os.path.exists(os.path.join(wt11, "k.txt")))
+caso("pasta só com deno.lock solto: saiu", not os.path.exists(wt12))
 caso("trabalho não salvo continua lá", os.path.exists(os.path.join(wt2, "rascunho.txt")))
 
 print(f"\n{'TODOS PASSARAM' if not falhas else str(len(falhas)) + ' FALHARAM'}")
