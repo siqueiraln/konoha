@@ -212,7 +212,11 @@ def executar(pasta, acoes):
             # confere de novo na hora: só sobras de ferramenta dentro; o --force é para o git aceitar apagá-las
             cod, _ = (git(pasta, "worktree", "remove", "--force", alvo) if limpa(alvo) else (1, "pasta mudou"))
         elif tipo == "branch":
-            cod, _ = git(pasta, "branch", "-D" if motivo in FORCAR else "-d", alvo)
+            # `-d` compara com a main LOCAL, que costuma estar atrasada (351 commits em 10/10/2026) e recusa.
+            # A prova de que acabou é estar em origin/main: confere de novo na hora e apaga com -D.
+            _, ponta = git(pasta, "rev-parse", "--verify", f"refs/heads/{alvo}")
+            seguro = motivo in FORCAR or (ponta and contida_na_principal(pasta, ponta))
+            cod, _ = git(pasta, "branch", "-D", alvo) if seguro else (1, "branch mudou")
         else:
             cod, _ = git(pasta, "push", "origin", "--delete", alvo, timeout=60)
         registrar(f"{'ok ' if cod == 0 else 'ERRO'} {tipo} {alvo} ({motivo})")
