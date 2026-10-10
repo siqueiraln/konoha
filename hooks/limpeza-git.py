@@ -6,12 +6,21 @@ de estar na versão principal e sem trabalho pendente:
 - **Branch de PR juntado seu** (gh pr list --state merged --author @me), cuja
   ponta é exatamente a que foi juntada: apaga a pasta de trabalho dela (se
   estiver limpa), a branch local e a branch no GitHub.
-- **Branch local antiga já contida na principal** (sem PR, ponta mais velha que
-  7 dias): apaga só a local. Branch recém-criada da principal fica.
+- **Branch de PR seu fechado sem juntar** (--state closed), ponta igual à do
+  PR: o trabalho foi refeito noutro PR ou desistido. Apaga pasta limpa, branch
+  local e branch no GitHub. (Em 01/10/2026 seis PRs do Chat foram fechados e
+  refeitos num só; as seis pastas ficaram.)
+- **Pasta de trabalho de fatia já na principal** (branch sem PR, conteúdo
+  todo contido em origin/main, pasta parada há mais de 1 dia): apaga a pasta,
+  a branch local e, se a branch estiver no GitHub com a mesma ponta, a do
+  GitHub. Fatia que acabou de ser criada da principal fica.
+- **Branch local antiga já contida na principal** (sem pasta, ponta mais velha
+  que 7 dias): apaga só a local. Branch recém-criada da principal fica.
 - **Pasta de trabalho sem branch** (detached) limpa, contida na principal e
   parada há mais de 1 dia: apaga a pasta.
 - Nunca: a pasta principal, a pasta onde a conversa está, pasta com qualquer
-  arquivo alterado ou novo, branch de outra pessoa no GitHub.
+  arquivo alterado ou novo, branch com commit que não está na principal (fora
+  PR seu juntado ou fechado), branch de outra pessoa no GitHub.
 
 Modos:
     python limpeza-git.py [--simular]   na pasta do projeto: limpa agora e conta o que fez
@@ -53,15 +62,24 @@ def registrar(texto):
         pass
 
 
-def prs_juntados(pasta):
-    """{branch: ponta juntada} dos seus PRs juntados; {} se o gh não responder."""
+def prs_seus(pasta, estado):
+    """{branch: ponta} dos seus PRs no estado dado ("merged" ou "closed"); {} se o gh não responder."""
     try:
-        r = subprocess.run(["gh", "pr", "list", "--state", "merged", "--author", "@me", "--limit", "200",
+        r = subprocess.run(["gh", "pr", "list", "--state", estado, "--author", "@me", "--limit", "200",
                             "--json", "headRefName,headRefOid"], cwd=pasta, capture_output=True, text=True,
                            encoding="utf-8", timeout=30, stdin=subprocess.DEVNULL, creationflags=SEM_JANELA)
         return {p["headRefName"]: p["headRefOid"] for p in json.loads(r.stdout or "[]")}
     except Exception:
         return {}
+
+
+def prs_juntados(pasta):
+    return prs_seus(pasta, "merged")
+
+
+def prs_fechados(pasta):
+    """PRs seus fechados sem juntar (o gh separa 'closed' de 'merged')."""
+    return prs_seus(pasta, "closed")
 
 
 def pastas_de_trabalho(pasta):
@@ -99,9 +117,24 @@ def dentro(filho, pai):
     return f == p or f.startswith(p.rstrip("\\/") + os.sep)
 
 
-def planejar(pasta, cwd, juntados):
+PR_JUNTADO = "PR juntado"
+PR_FECHADO = "PR fechado sem juntar"
+FATIA = "fatia já na principal"
+FORCAR = (PR_JUNTADO, PR_FECHADO)  # a branch pode ter commit fora da principal; o PR é a prova de que acabou
+
+
+def parada(caminho, agora):
+    try:
+        return (agora - os.path.getmtime(caminho)) / 3600 > HORAS_PASTA_PARADA
+    except OSError:
+        return False
+
+
+def planejar(pasta, cwd, juntados, fechados=None):
     """Lista de ações [(tipo, alvo, motivo)] sem executar nada."""
+    fechados = fechados or {}
     acoes = []
+    fatias = set()  # branches cuja pasta sai por ser fatia já na principal
     pastas = pastas_de_trabalho(pasta)
     if not pastas:
         return acoes
@@ -119,14 +152,14 @@ def planejar(pasta, cwd, juntados):
         if not limpa(caminho):
             continue
         if branch and juntados.get(branch) == ponta:
-            acoes.append(("pasta", caminho, f"PR juntado ({branch})"))
-        elif not branch and contida_na_principal(pasta, ponta):
-            try:
-                parada = (agora - os.path.getmtime(caminho)) / 3600 > HORAS_PASTA_PARADA
-            except OSError:
-                parada = False
-            if parada:
-                acoes.append(("pasta", caminho, "sem branch, já contida na principal"))
+            acoes.append(("pasta", caminho, f"{PR_JUNTADO} ({branch})"))
+        elif branch and fechados.get(branch) == ponta:
+            acoes.append(("pasta", caminho, f"{PR_FECHADO} ({branch})"))
+        elif branch and branch not in ("main", "master") and contida_na_principal(pasta, ponta) and parada(caminho, agora):
+            acoes.append(("pasta", caminho, f"{FATIA} ({branch})"))
+            fatias.add(branch)
+        elif not branch and contida_na_principal(pasta, ponta) and parada(caminho, agora):
+            acoes.append(("pasta", caminho, "sem branch, já contida na principal"))
 
     removidas = {a[1] for a in acoes if a[0] == "pasta"}
     _, saida = git(pasta, "for-each-ref", "--format=%(refname:short) %(objectname) %(committerdate:unix)", "refs/heads")
@@ -138,7 +171,11 @@ def planejar(pasta, cwd, juntados):
         if uso and uso["caminho"] not in removidas:
             continue  # aberta numa pasta que fica
         if juntados.get(nome) == ponta:
-            acoes.append(("branch", nome, "PR juntado"))
+            acoes.append(("branch", nome, PR_JUNTADO))
+        elif fechados.get(nome) == ponta:
+            acoes.append(("branch", nome, PR_FECHADO))
+        elif nome in fatias:
+            acoes.append(("branch", nome, FATIA))
         elif contida_na_principal(pasta, ponta) and agora - int(data or 0) > DIAS_BRANCH_ANTIGA * 86400:
             acoes.append(("branch", nome, "antiga e já contida na principal"))
 
@@ -149,7 +186,11 @@ def planejar(pasta, cwd, juntados):
         if curto in ("HEAD", "main", "master", "origin"):
             continue
         if juntados.get(curto) == ponta:
-            acoes.append(("github", curto, "PR juntado"))
+            acoes.append(("github", curto, PR_JUNTADO))
+        elif fechados.get(curto) == ponta:
+            acoes.append(("github", curto, PR_FECHADO))
+        elif curto in fatias and contida_na_principal(pasta, ponta):
+            acoes.append(("github", curto, FATIA))
     return acoes
 
 
@@ -159,7 +200,7 @@ def executar(pasta, acoes):
         if tipo == "pasta":
             cod, _ = git(pasta, "worktree", "remove", alvo)
         elif tipo == "branch":
-            cod, _ = git(pasta, "branch", "-D" if motivo == "PR juntado" else "-d", alvo)
+            cod, _ = git(pasta, "branch", "-D" if motivo in FORCAR else "-d", alvo)
         else:
             cod, _ = git(pasta, "push", "origin", "--delete", alvo, timeout=60)
         registrar(f"{'ok ' if cod == 0 else 'ERRO'} {tipo} {alvo} ({motivo})")
@@ -176,7 +217,7 @@ def limpar(cwd, simular=False):
     _, comum = git(cwd, "rev-parse", "--path-format=absolute", "--git-common-dir")
     principal = os.path.dirname(comum) if comum else pasta
     git(principal, "fetch", "--prune", "origin", timeout=60)
-    acoes = planejar(principal, cwd, prs_juntados(principal))
+    acoes = planejar(principal, cwd, prs_juntados(principal), prs_fechados(principal))
     return acoes if simular else executar(principal, acoes)
 
 

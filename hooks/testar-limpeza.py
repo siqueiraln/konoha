@@ -76,9 +76,39 @@ wt7 = os.path.join(base, "wt-da-conversa")
 g(repo, "worktree", "add", "-q", "-b", "feat/conversa", wt7)
 ponta7 = commit(wt7, "g.txt")
 
+# 8. PR fechado sem juntar (refeito noutro PR): pasta limpa, branch local e do GitHub saem
+wt8 = os.path.join(base, "wt-fechada")
+g(repo, "worktree", "add", "-q", "-b", "feat/fechada", wt8)
+ponta8 = commit(wt8, "h.txt")
+g(wt8, "push", "-q", "origin", "feat/fechada")
+
+# 9. Fatia sem PR, já toda na principal, pasta parada há 2 dias: pasta, branch e GitHub saem
+wt9 = os.path.join(base, "wt-fatia-velha")
+g(repo, "worktree", "add", "-q", "-b", "feat/fatia-velha", wt9)
+commit(wt9, "i.txt")
+g(wt9, "push", "-q", "origin", "feat/fatia-velha")
+g(repo, "merge", "-q", "--no-ff", "-m", "merge9", "feat/fatia-velha")
+g(repo, "push", "-q", "origin", "main")
+antes = time.time() - 2 * 86400
+os.utime(wt9, (antes, antes))
+
+# 10. Fatia sem PR, já na principal, mas pasta mexida agora: fica
+wt10 = os.path.join(base, "wt-fatia-nova")
+g(repo, "worktree", "add", "-q", "-b", "feat/fatia-nova", wt10)
+commit(wt10, "j.txt")
+g(repo, "merge", "-q", "--no-ff", "-m", "merge10", "feat/fatia-nova")
+g(repo, "push", "-q", "origin", "main")
+
+# 11. Fatia parada, mas com commit que NÃO está na principal: fica
+wt11 = os.path.join(base, "wt-fatia-pendente")
+g(repo, "worktree", "add", "-q", "-b", "feat/fatia-pendente", wt11)
+commit(wt11, "k.txt")
+os.utime(wt11, (antes, antes))
+
 g(repo, "fetch", "-q", "--prune", "origin")
 juntados = {"feat/juntada": ponta1, "feat/suja": ponta2, "feat/continuou": ponta3_juntada, "feat/conversa": ponta7}
-acoes = L.planejar(repo, wt7, juntados)
+fechados = {"feat/fechada": ponta8}
+acoes = L.planejar(repo, wt7, juntados, fechados)
 alvos = {(t, os.path.normcase(a) if t == "pasta" else a) for t, a, _ in acoes}
 
 falhas = []
@@ -102,10 +132,17 @@ caso("trabalho sem PR: fica", not any(a in ("feat/andando", nc(wt5)) for _, a in
 caso("branch de outra pessoa no GitHub: fica", ("github", "outra/pessoa") not in alvos)
 caso("pasta onde a conversa está: fica", ("pasta", nc(wt7)) not in alvos and ("branch", "feat/conversa") not in alvos)
 caso("pasta principal nunca", ("pasta", nc(repo)) not in alvos)
+caso("PR fechado sem juntar: apaga pasta, branch local e GitHub",
+     ("pasta", nc(wt8)) in alvos and ("branch", "feat/fechada") in alvos and ("github", "feat/fechada") in alvos)
+caso("fatia já na principal, parada: apaga pasta, branch local e GitHub",
+     ("pasta", nc(wt9)) in alvos and ("branch", "feat/fatia-velha") in alvos and ("github", "feat/fatia-velha") in alvos)
+caso("fatia já na principal, mexida agora: fica", not any(a in ("feat/fatia-nova", nc(wt10)) for _, a in alvos))
+caso("fatia parada com commit fora da principal: fica", not any(a in ("feat/fatia-pendente", nc(wt11)) for _, a in alvos))
 
 feitas = L.executar(repo, acoes)
 caso("executa tudo o que planejou", len(feitas) == len(acoes))
-caso("pasta apagada de verdade", not os.path.exists(wt1))
+caso("pasta apagada de verdade", not os.path.exists(wt1) and not os.path.exists(wt8) and not os.path.exists(wt9))
+caso("fatia pendente continua lá", os.path.exists(os.path.join(wt11, "k.txt")))
 caso("trabalho não salvo continua lá", os.path.exists(os.path.join(wt2, "rascunho.txt")))
 
 print(f"\n{'TODOS PASSARAM' if not falhas else str(len(falhas)) + ' FALHARAM'}")
