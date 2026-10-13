@@ -71,7 +71,7 @@ Para esses três, o teste tem que falhar quando a regra é quebrada: se você n�
 Você **prepara**; quem aplica é o Tech Lead, na conversa principal, depois do "pode" do dono (só a conversa principal consegue mostrar ao dono a confirmação da trava).
 
 Para uma mudança em produção (migration, correção de dados, publicar ou remover função do servidor), entregue:
-1. **A migration como arquivo no repositório**, já testada no banco local. Correção de dados também: nada de comando solto.
+1. **A migration como arquivo no repositório**, já testada no banco local e, se o projeto tem espelho (protocolo de comunicação, "Espelho"), **aplicada no espelho** com o mesmo conteúdo: lá você aplica sem pedir a ninguém. Correção de dados também: nada de comando solto.
 2. **Mexe em dados existentes?** A própria migration guarda uma cópia das linhas que vai alterar ou apagar (tabela de backup com data no nome) antes de alterar.
 3. **Os números**, contados agora em produção, só lendo: quantas linhas ela afeta, alguns exemplos.
 4. **Como conferir** que deu certo e **como voltar atrás**.

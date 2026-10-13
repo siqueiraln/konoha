@@ -99,6 +99,36 @@ CASOS = [
     ("Bash", {"command": "node _script_teste_grava.js"}, PERGUNTA),
     ("Bash", {"command": "node _script_teste_le.js"}, LIVRE),
     ("Bash", {"command": "node scripts/nao-existe.js"}, LIVRE),
+    # Espelho (13/10): no projeto espelho o agente muda o banco sem perguntar; produção continua igual
+    ("mcp__supabase-espelho__execute_sql", {"query": "delete from contatos"}, LIVRE),
+    ("mcp__supabase-espelho__execute_sql", {"query": "select public.funcao_teste_que_grava(1)"}, LIVRE),
+    ("mcp__supabase-espelho__apply_migration", {"name": "x", "query": "drop table t"}, LIVRE),
+    ("mcp__supabase-espelho__deploy_edge_function", {"name": "aberta"}, LIVRE),
+    ("mcp__supabase-espelho__list_tables", {}, LIVRE),
+    ("mcp__supabase-espelho__create_branch", {}, PERGUNTA),
+    ("mcp__supabase-espelho__reset_branch", {}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "create table t()"}, LIVRE),
+    ("mcp__claude_ai_Supabase__execute_sql", {"project_id": "espelhoespelhoespelho", "query": "insert into x values (1)"}, LIVRE),
+    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "create table t()"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__execute_sql", {"project_id": "producaoproducaoprod", "query": "insert into x values (1)"}, NEGA),
+    ("mcp__supabase__execute_sql", {"query": "update contatos set nome = 'espelhoespelhoespelho'"}, NEGA),
+    ("mcp__supabase-espelho2__apply_migration", {"name": "x", "query": "create table t()"}, PERGUNTA),
+    ("Bash", {"command": "npx supabase db push --db-url postgresql://postgres.espelhoespelhoespelho:x@aws-0.pooler.supabase.com:5432/postgres"}, PERGUNTA),
+    # Conector da conta que aparece com um código no lugar do nome: é banco do mesmo jeito
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"project_id": "producaoproducaoprod", "query": "update x set a = 1"}, NEGA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"project_id": "producaoproducaoprod", "query": "select 1"}, LIVRE),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "create table t()"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__deploy_edge_function", {"project_id": "producaoproducaoprod", "name": "aberta"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "drop table t"}, LIVRE),
+    ("mcp__3e4cee0e-6ef0-45e7-8596-851789b32e6e__create_project", {"name": "site"}, LIVRE),
+    ("mcp__3e4cee0e-6ef0-45e7-8596-851789b32e6e__pause_project", {}, LIVRE),
+]
+
+# Os mesmos pedidos num projeto SEM espelho registrado: tudo como produção.
+CASOS_SEM_ESPELHO = [
+    ("mcp__supabase-espelho__execute_sql", {"query": "delete from contatos"}, NEGA),
+    ("mcp__supabase-espelho__apply_migration", {"name": "x", "query": "create table t()"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "create table t()"}, PERGUNTA),
 ]
 
 
@@ -110,7 +140,8 @@ def montar_pasta_teste():
     (PASTA_TESTE / "supabase" / "migrations").mkdir(parents=True, exist_ok=True)
     (PASTA_TESTE / ".claude").mkdir(exist_ok=True)
     (PASTA_TESTE / ".claude" / "konoha.json").write_text(
-        '{"n8n_hosts": ["automacao.exemplo.com.br"], "publicar_funcao": "npm run publicar:funcao -- {nome}"}',
+        '{"n8n_hosts": ["automacao.exemplo.com.br"], "publicar_funcao": "npm run publicar:funcao -- {nome}", '
+        '"banco_espelho": {"ref": "espelhoespelhoespelho", "mcp": "supabase-espelho"}}',
         encoding="utf-8",
     )
     (PASTA_TESTE / "supabase" / "config.toml").write_text(
@@ -190,7 +221,15 @@ def main() -> int:
         if obtido != esperado:
             falhas += 1
             print(f"FALHOU: {ferramenta} {entrada} -> esperado {esperado}, obtido {obtido}")
-    print(f"{len(CASOS) - falhas}/{len(CASOS)} casos passaram")
+    sem_projeto = str(pathlib.Path(__file__).resolve().anchor)
+    for ferramenta, entrada, esperado in CASOS_SEM_ESPELHO:
+        resultado = trava.decidir({"tool_name": ferramenta, "tool_input": entrada, "cwd": sem_projeto})
+        obtido = resultado[0] if resultado else None
+        if obtido != esperado:
+            falhas += 1
+            print(f"FALHOU (sem espelho): {ferramenta} {entrada} -> esperado {esperado}, obtido {obtido}")
+    total = len(CASOS) + len(CASOS_SEM_ESPELHO)
+    print(f"{total - falhas}/{total} casos passaram")
     return 1 if falhas else 0
 
 

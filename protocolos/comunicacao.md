@@ -137,6 +137,20 @@ Cada banco local ligado ocupa memória e processador da máquina do dono, e ning
 - **Reaproveite, não recrie.** Ligue com `supabase start` na pasta registrada. Cada teste cria os próprios dados, com identificadores novos, e não apaga o banco. Montar do zero (`supabase db reset`) só quando a tarefa muda a estrutura do banco (migration nova).
 - **Terminou, desligue:** `supabase stop` na pasta registrada, **sem** `--no-backup` (isso apaga os dados). Se esquecer, o vigia automático desliga depois de 2 horas sem uso.
 
+### Espelho: a cópia da produção onde o banco muda sem pedir
+
+O dono não lê SQL: pedir o "pode" dele a cada comando não confere nada e só para o trabalho quando ele sai do computador (decisão de 13/10/2026, depois de 164 pedidos em uma semana). Por isso a mudança de banco se faz e se prova **fora da produção**, e a produção só recebe o que já funcionou.
+
+Projeto com o campo `banco_espelho` no `.claude/konoha.json` (`{"ref": "<código do projeto>", "mcp": "<servidor MCP>", "pasta": "<receita>"}`) tem um projeto Supabase separado, com a **estrutura** da produção e **nenhum dado de cliente**.
+
+- **No espelho a trava não pergunta:** consulta que grava, migration e publicar função pelas ferramentas `mcp__<mcp>__*` passam direto. Na produção nada mudou.
+- **Confira o alvo pelo nome da ferramenta, nunca pela memória:** `mcp__<mcp>__` é espelho; qualquer outra ferramenta do Supabase é produção.
+- **Toda mudança de banco passa pelo espelho antes de pedir produção:** a migration é aplicada lá e a permissão é conferida lá. As permissões do espelho são iguais às da produção; as do banco local não são (banco montado de foto nasce com função e tabela abertas para quem não está logado), então "quem não pode, não consegue" só vale provado no espelho.
+- **Nunca dado de cliente no espelho.** Dado de teste se cria lá, com identificadores novos, e se apaga ao terminar.
+- **É um só e é de todos:** não apague nem refaça o espelho, não ligue tarefa agendada nele (ficam desligadas para nada disparar sozinho). Quem refaz é o Tech Lead, pela receita da pasta registrada.
+- **O espelho envelhece** quando alguém muda a produção por fora. Não bate com o que o desenho supõe: BLOQUEADO, com o que viu.
+- **Não tem o campo:** o projeto não tem espelho; vale o banco local e o caminho de sempre.
+
 ### Pistas: quem confere depende do risco
 
 O Tech Lead põe cada tarefa numa pista **antes de começar** e diz qual nas instruções de cada agente. Na dúvida entre duas, a mais leve; sobe de pista só se a tarefa passar a mexer no que a pista de cima cobre.

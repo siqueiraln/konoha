@@ -6,7 +6,9 @@ Cada projeto tem, no próprio repositório, o arquivo `.claude/konoha.json`:
       "linear_time": "Nome do time no Linear",
       "n8n_hosts": ["dominio-do-n8n-sem-n8n-no-nome.com.br"],
       "docs": "docs/crm/konoha",
-      "publicar_funcao": "npm run publicar:funcao -- {nome}"
+      "publicar_funcao": "npm run publicar:funcao -- {nome}",
+      "banco_local": {"pasta": "<onde fica>", "nome": "<nome do banco>"},
+      "banco_espelho": {"ref": "<código do projeto>", "mcp": "<servidor MCP ligado só nele>", "pasta": "<receita para refazer>"}
     }
 
 Todos os campos são opcionais. Sem o arquivo, o gancho do Linear não roda e a

@@ -17,6 +17,13 @@ entrada padrão e responde:
   gravação pela API do Supabase e script que grava no Supabase: PERGUNTA;
 - toda pergunta diz em português o que a mudança faz, com ⚠️ no que é grave
   (traduzir.py). O dono não lê SQL: a tela é o que ele avalia;
+- projeto ESPELHO (campo banco_espelho do `.claude/konoha.json`: cópia da
+  estrutura de produção, sem dado de cliente): consulta que grava, migration e
+  publicar função pelas ferramentas do Supabase passam sem perguntar. É lá que os
+  agentes mudam e testam o banco. Pelo terminal, o espelho pergunta como produção;
+- ferramenta de banco de qualquer servidor MCP (execute_sql, apply_migration,
+  deploy_edge_function) é tratada como Supabase, mesmo sem "supabase" no nome
+  (o conector da conta aparece com um código no lugar do nome em algumas conversas);
 - qualquer outra coisa: não interfere.
 
 Buracos que continuam: `npm run <script>` (a trava não vê o que roda), função
@@ -76,6 +83,32 @@ FERRAMENTAS_SUPABASE_QUE_ALTERAM = re.compile(
     r"reset_branch|rebase_branch|restore_project|pause_project|create_project|"
     r"update_storage_config|create_storage_bucket|delete_storage_bucket)$"
 )
+
+# Ferramentas de banco: valem pelo nome da ação, venham do servidor que vierem.
+FERRAMENTAS_DE_BANCO = ("__execute_sql", "__apply_migration", "__deploy_edge_function")
+
+
+def ferramenta_supabase(ferramenta: str) -> bool:
+    return ferramenta.startswith("mcp__") and (
+        "supabase" in ferramenta.lower() or ferramenta.endswith(FERRAMENTAS_DE_BANCO)
+    )
+
+
+def alvo_e_espelho(ferramenta: str, entrada: dict, cwd: str) -> bool:
+    """A chamada vai para o projeto espelho do `.claude/konoha.json`?
+
+    Campo `banco_espelho`: {"ref": "<código do projeto>", "mcp": "<nome do servidor MCP ligado só nele>"}.
+    Vale o nome do servidor (ferramentas `mcp__<mcp>__*`) ou o `project_id` da chamada,
+    quando a ferramenta é do conector da conta e escolhe o projeto a cada chamada.
+    """
+    espelho = projeto.config(cwd).get("banco_espelho")
+    if not isinstance(espelho, dict):
+        return False
+    mcp, ref = espelho.get("mcp"), espelho.get("ref")
+    if mcp and ferramenta.startswith(f"mcp__{mcp}__"):
+        return True
+    return bool(ref) and entrada.get("project_id") == ref
+
 
 TERMINAL_SUPABASE_QUE_ALTERA = re.compile(
     r"\bsupabase\s+(db\s+push|migration\s+(up|repair|squash)|functions\s+(deploy|delete)|"
@@ -185,7 +218,10 @@ def decidir(chamada: dict):
     entrada = chamada.get("tool_input", {}) or {}
     cwd = chamada.get("cwd", "")
 
-    if ferramenta.startswith("mcp__") and "supabase" in ferramenta.lower():
+    if ferramenta_supabase(ferramenta):
+        no_espelho = alvo_e_espelho(ferramenta, entrada, cwd)
+        if no_espelho and ferramenta.endswith(FERRAMENTAS_DE_BANCO):
+            return None
         if ferramenta.endswith("__execute_sql"):
             if sql_grava(entrada.get("query", "")):
                 return (
@@ -209,9 +245,10 @@ def decidir(chamada: dict):
             return ("ask", traduzir.resumo_funcao(entrada)[0])
         if FERRAMENTAS_SUPABASE_QUE_ALTERAM.search(ferramenta):
             acao = ferramenta.rsplit("__", 1)[-1]
+            onde = "no projeto ESPELHO (não é produção)" if no_espelho else "no Supabase de PRODUÇÃO"
             return (
                 "ask",
-                f"🔒 Mudança no Supabase de PRODUÇÃO ({acao}). Não é uma mudança de dados comum: "
+                f"🔒 Mudança {onde} ({acao}). Não é uma mudança de dados comum: "
                 "aprove só se o Tech Lead explicou, logo acima, o que é e por quê.",
             )
         return None

@@ -109,7 +109,7 @@ Toda chamada a um agente leva, escrito do zero (nunca colando pedaços de outra 
 
 Aplicar migration, corrigir, preencher ou apagar dados em produção é **ação do dono**, que ele delega **uma de cada vez**. Por menor que seja. Vale também para **rodar uma função do banco que grava** (ex.: os lotes de uma virada): parece consulta, mas altera. A trava pergunta; o passo 2 vem antes, e um roteiro de lotes pode ir num "pode" só (último parágrafo).
 
-1. O Implementador prepara a migration (arquivo no repositório) e testa no banco local.
+1. O Implementador prepara a migration (arquivo no repositório) e testa no banco local. **Projeto com espelho** (protocolo de comunicação, "Espelho"): a migration já foi aplicada e provada no espelho, com o mesmo conteúdo do arquivo; sem isso, não peça o ok.
 2. Você mostra ao dono, em linguagem de negócio, **antes de pedir o ok**:
    - o que a mudança faz e por quê;
    - se mexe em dados existentes: **quantas linhas** (contadas agora, em produção, só lendo) e **alguns exemplos**;
