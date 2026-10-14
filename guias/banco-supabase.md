@@ -71,7 +71,7 @@ Antes de mudar ou remover coluna, função, gatilho ou regra de acesso: liste **
 
 ## 6. Migrations e ambientes
 
-- **O repositório é a verdade do banco.** Toda mudança no banco é uma migration no repositório, criada pela ferramenta oficial (`supabase migration new`), testada localmente (`supabase db reset`) e aplicada por um caminho só. Nunca mexer direto no banco de produção.
+- **O repositório é a verdade do banco.** Toda mudança no banco é uma migration no repositório, criada pela ferramenta oficial (`supabase migration new`), testada no banco de teste do projeto (o espelho; sem espelho, o banco local com `supabase db reset`) e aplicada por um caminho só. Nunca mexer direto no banco de produção.
 - **Mudança compatível com as duas versões do código.** O site e o banco não mudam no mesmo instante. Acrescente primeiro (coluna nova com valor padrão ou opcional para o código antigo), publique o código que usa, e só remova o velho numa mudança seguinte. Se não der, a ordem obrigatória fica escrita no desenho e na descrição do PR.
 - **Função com assinatura nova:** `create or replace` com parâmetros diferentes cria uma **segunda** função e deixa a antiga viva e executável. Remova a antiga (`drop function` com a assinatura exata) na mesma migration.
 - **Numeração:** confira a última migration existente antes de criar, para não colidir com outra linha de trabalho.

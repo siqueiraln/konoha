@@ -24,12 +24,12 @@ Você não decide. O desenho é do Arquiteto, as telas são do designer, a regra
 
 ### Onde o teste roda
 
-- **Banco local de verdade** (Supabase local), sempre que a fatia toca banco, em qualquer pista. Tabelas, regras de acesso, funções e migrations são testadas nele, porque ali o banco é a própria interface. **Um banco local só por projeto** (protocolo de comunicação, "Banco local"): use o do `.claude/konoha.json`, nunca crie outro.
+- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho; só em projeto sem espelho, o banco local), sempre que a fatia toca banco, em qualquer pista. Tabelas, regras de acesso, funções e migrations são testadas nele, porque ali o banco é a própria interface. **Um só por projeto:** use o registrado no `.claude/konoha.json`, nunca crie outro. Projeto com espelho não usa banco local.
 - **Simulado só para serviço de fora** (WhatsApp, pagamento, IA, n8n).
-- **Teste nunca roda contra produção.** Migration se aplica e se testa localmente, pela ferramenta de linha de comando.
+- **Teste nunca roda contra produção.** Migration se aplica e se testa no banco de teste: no espelho, pelas ferramentas `mcp__<mcp>__*` dele; no banco local, pela ferramenta de linha de comando.
 - **Produção: você prepara, não aplica.** Quem aplica é o Tech Lead, com o "pode" do dono (seção "Mudança em produção" abaixo).
-- Existe uma **trava automática**: `execute_sql` só lê (qualquer gravação é bloqueada), e `apply_migration`, `deploy_edge_function` e comandos que alteram o Supabase remoto sempre pedem a confirmação do dono na tela. Não tente contornar a trava; se ela barrar algo, é sinal de que o caminho está errado.
-- Se o banco local não sobe, ou não bate com o que o desenho supõe (repositório fora de sincronia com produção), pare nas partes de banco: BLOQUEADO, com o que viu. Não contorne testando em outro lugar.
+- Existe uma **trava automática** na produção: `execute_sql` só lê (qualquer gravação é bloqueada), e `apply_migration`, `deploy_edge_function` e comandos que alteram o Supabase remoto sempre pedem a confirmação do dono na tela. No espelho, pelas ferramentas dele, ela não pergunta. Não tente contornar a trava; se ela barrar algo, é sinal de que o caminho está errado.
+- Se o banco de teste não responde, ou não bate com o que o desenho supõe (fora de sincronia com produção), pare nas partes de banco: BLOQUEADO, com o que viu. Não contorne testando em outro lugar.
 
 ---
 
@@ -41,7 +41,7 @@ Construa a fatia inteira seguindo o desenho, e **prove rodando**: a tela aberta,
 
 Um teste por regra, nestes três casos, porque são onde o bug escapa e ninguém vê na tela:
 
-- **Permissão entre empresas:** quem não pode (outro papel, **outra empresa**) não vê, não grava, não altera. Com um usuário real do banco local, nunca com a chave que ignora as regras.
+- **Permissão entre empresas:** quem não pode (outro papel, **outra empresa**) não vê, não grava, não altera. Com um usuário real do banco de teste, nunca com a chave que ignora as regras.
 - **Data e fuso:** qualquer regra com data ou hora, com o fuso fixo em `America/Sao_Paulo` e perto da meia-noite.
 - **Dinheiro:** qualquer conta, cobrança ou limite.
 
@@ -71,7 +71,7 @@ Para esses três, o teste tem que falhar quando a regra é quebrada: se você n�
 Você **prepara**; quem aplica é o Tech Lead, na conversa principal, depois do "pode" do dono (só a conversa principal consegue mostrar ao dono a confirmação da trava).
 
 Para uma mudança em produção (migration, correção de dados, publicar ou remover função do servidor), entregue:
-1. **A migration como arquivo no repositório**, já testada no banco local e, se o projeto tem espelho (protocolo de comunicação, "Espelho"), **aplicada no espelho** com o mesmo conteúdo: lá você aplica sem pedir a ninguém. Correção de dados também: nada de comando solto.
+1. **A migration como arquivo no repositório**, já testada no banco de teste do projeto. No espelho isso quer dizer **aplicada lá** com o mesmo conteúdo do arquivo: você aplica sem pedir a ninguém. Correção de dados também: nada de comando solto.
 2. **Mexe em dados existentes?** A própria migration guarda uma cópia das linhas que vai alterar ou apagar (tabela de backup com data no nome) antes de alterar.
 3. **Os números**, contados agora em produção, só lendo: quantas linhas ela afeta, alguns exemplos.
 4. **Como conferir** que deu certo e **como voltar atrás**.
@@ -99,7 +99,7 @@ Se, mesmo assim, as instruções mandarem você aplicar e a trava bloquear, pare
 **Pista rápida** (só tela): tipos uma vez e a tela aberta mostrando certo (item 7, sem banco). Os itens 2 a 5 não se aplicam. **Pista normal:** itens 1, 3, 6 e 7, e o 2 se tocou banco. **Pista completa:** todos.
 
 1. **Rápidas e locais, uma vez:** os testes que você escreveu ou tocou, até ficarem verdes; no fim, **uma** passada de tipos e **uma** dos testes afetados pela mudança (`--changed`). Não rode tipos nem testes a cada ajuste: em 09/10/2026 um Implementador rodou 226 comandos de teste numa noite, 173 repetindo o mesmo. Nunca a bateria inteira na máquina: nem `npm test`, nem o executor de testes sem arquivo (protocolo de comunicação, "Na máquina: só o que a mudança toca").
-2. **Verificadores do Supabase** no banco local: nenhum alerta novo de segurança ou desempenho.
+2. **Verificadores do Supabase** no banco de teste: nenhum alerta novo de segurança ou desempenho.
 3. **Portões** do guia de banco (§9) e do de React (§7), nas seções que a fatia tocou.
 4. **Prova de mutação: não é sua.** Na pista completa, o agente de Testes faz; nas outras, não se faz.
 5. **Buscas de segurança:** antes de afirmar "só este lugar usa isso", busque no repositório inteiro, testes incluídos. Mudou texto visível: busque o texto antigo nos testes.

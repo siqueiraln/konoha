@@ -103,7 +103,7 @@ Cada agente tem a voz do seu personagem (seção "Sua voz" no arquivo do agente)
 
 Testar é para ganhar confiança, não para acumular rodadas. O esforço de teste acompanha o risco da mudança, não o tempo disponível.
 
-**O que pega bug é rodar a coisa de verdade, uma vez: tela aberta, banco local, a linha gravada.** Decisão do dono em 10/10/2026, depois de medir: um pedido de botões nos lembretes levou 13 horas, 5h20 só de esteira (sete fatias, cada uma com Implementador, Testes e Revisor; 326 comandos de teste, 240 repetidos), e bug continua escapando mesmo assim. O produto já tinha 5 mil testes que não pegavam 7 de cada 10 bugs. Camada de conferência não substitui ver funcionando.
+**O que pega bug é rodar a coisa de verdade, uma vez: tela aberta, banco de teste, a linha gravada.** Decisão do dono em 10/10/2026, depois de medir: um pedido de botões nos lembretes levou 13 horas, 5h20 só de esteira (sete fatias, cada uma com Implementador, Testes e Revisor; 326 comandos de teste, 240 repetidos), e bug continua escapando mesmo assim. O produto já tinha 5 mil testes que não pegavam 7 de cada 10 bugs. Camada de conferência não substitui ver funcionando.
 
 - **Teste escrito só onde ele pega bug de verdade:** permissão entre empresas (quem vê o quê), data e fuso, dinheiro. Um teste por regra, pelo Implementador. O resto se prova rodando, não se escreve teste.
 - **Teste antes do código não é obrigação.** Construa, rode, mostre funcionando.
@@ -128,28 +128,34 @@ A máquina do dono é uma só, e várias conversas dividem ela. A bateria inteir
 - **A bateria inteira roda no CI do projeto**, a cada PR, fora da máquina do dono. Ela pega o que os "afetados" não seguem: configuração, bibliotecas instaladas, arquivo de preparação dos testes.
 - **Projeto sem CI:** é decisão do dono; não se relata. A bateria inteira só roda na máquina se a mudança tocar configuração do executor, `package.json` ou a preparação dos testes: uma vez, pelo Tech Lead, em segundo plano, nunca duas ao mesmo tempo.
 
-### Banco local: um só por projeto
+### Banco de teste: o espelho; sem espelho, o banco local
 
-Cada banco local ligado ocupa memória e processador da máquina do dono, e ninguém lembra de desligar o que outro criou.
+O **banco de teste do projeto** é onde se muda, testa e prova tudo que toca banco. **É o espelho**, quando o `.claude/konoha.json` do projeto tem o campo `banco_espelho`; só em projeto sem espelho é o banco local (campo `banco_local`). **Projeto com espelho não usa banco local:** não ligue, não crie, não teste nele (decisão do dono em 14/10/2026: um lugar só).
 
-- **Um banco local por projeto, sempre o mesmo**, registrado no `.claude/konoha.json` do projeto, campo `banco_local`: `{"pasta": "<onde fica>", "nome": "<nome do banco>"}`. Todo agente usa esse. **Proibido criar outro** (outra pasta, outro `project_id`, `docker run` de Postgres solto).
-- **Não tem o campo:** o agente para as partes de banco e devolve (BLOQUEADO: "sem banco local registrado"). Quem monta é o Tech Lead, uma vez, e registra.
-- **Reaproveite, não recrie.** Ligue com `supabase start` na pasta registrada. Cada teste cria os próprios dados, com identificadores novos, e não apaga o banco. Montar do zero (`supabase db reset`) só quando a tarefa muda a estrutura do banco (migration nova).
-- **Terminou, desligue:** `supabase stop` na pasta registrada, **sem** `--no-backup` (isso apaga os dados). Se esquecer, o vigia automático desliga depois de 2 horas sem uso.
-
-### Espelho: a cópia da produção onde o banco muda sem pedir
+#### Espelho: a cópia da produção onde o banco muda sem pedir
 
 O dono não lê SQL: pedir o "pode" dele a cada comando não confere nada e só para o trabalho quando ele sai do computador (decisão de 13/10/2026, depois de 164 pedidos em uma semana). Por isso a mudança de banco se faz e se prova **fora da produção**, e a produção só recebe o que já funcionou.
 
-Projeto com o campo `banco_espelho` no `.claude/konoha.json` (`{"ref": "<código do projeto>", "mcp": "<servidor MCP>", "pasta": "<receita>"}`) tem um projeto Supabase separado, com a **estrutura** da produção e **nenhum dado de cliente**.
+O campo `banco_espelho` (`{"ref": "<código do projeto>", "mcp": "<servidor MCP>", "pasta": "<receita>"}`) aponta um projeto Supabase separado, com a **estrutura** da produção e **nenhum dado de cliente**. A `pasta` tem um LEIA-ME com tudo que é próprio daquele espelho: como abrir a tela, os usuários de teste, onde ler as chamadas para fora, como refazer.
 
 - **No espelho a trava não pergunta:** consulta que grava, migration e publicar função pelas ferramentas `mcp__<mcp>__*` passam direto. Na produção nada mudou.
 - **Confira o alvo pelo nome da ferramenta, nunca pela memória:** `mcp__<mcp>__` é espelho; qualquer outra ferramenta do Supabase é produção.
-- **Toda mudança de banco passa pelo espelho antes de pedir produção:** a migration é aplicada lá e a permissão é conferida lá. As permissões do espelho são iguais às da produção; as do banco local não são (banco montado de foto nasce com função e tabela abertas para quem não está logado), então "quem não pode, não consegue" só vale provado no espelho.
-- **Nunca dado de cliente no espelho.** Dado de teste se cria lá, com identificadores novos, e se apaga ao terminar.
-- **É um só e é de todos:** não apague nem refaça o espelho, não ligue tarefa agendada nele (ficam desligadas para nada disparar sozinho). Quem refaz é o Tech Lead, pela receita da pasta registrada.
-- **O espelho envelhece** quando alguém muda a produção por fora. Não bate com o que o desenho supõe: BLOQUEADO, com o que viu.
-- **Não tem o campo:** o projeto não tem espelho; vale o banco local e o caminho de sempre.
+- **Toda mudança de banco passa pelo espelho antes de pedir produção:** a migration é aplicada lá, com o mesmo conteúdo do arquivo do repositório, e a permissão é conferida lá (as permissões do espelho são iguais às da produção).
+- **Prova ao vivo é com a tela apontada para o espelho**, pelo comando que o LEIA-ME da pasta ensina. Nunca o comando de desenvolvimento puro numa pasta com as configurações de produção: o código pode ter endereços de produção escritos, e o comando do espelho é o que os troca e barra.
+- **Teste escrito de banco** roda no espelho dentro de uma transação desfeita no fim (`begin` … `rollback`), como usuário comum; como dono do banco ele ignora as regras de acesso e não prova permissão.
+- **O espelho não fala com ninguém:** chamada do banco para fora (função do servidor, n8n) é só anotada. A prova é "teria chamado tal endereço com tal conteúdo", lida onde o LEIA-ME diz; o serviço de fora continua simulado.
+- **Nunca dado de cliente no espelho.** Dado de teste se cria lá, com identificadores novos, e se apaga ao terminar. Os usuários e a empresa de teste que já vêm prontos ficam.
+- **É um só e é de todos:** não apague nem refaça o espelho, não ligue tarefa agendada nele (ficam desligadas para nada disparar sozinho). O que você aplicou e não vai para produção (tentativa que não deu certo, tarefa abandonada), **desfaça**: o espelho é a produção mais o que está a caminho dela. Mudança que pode deixar o espelho quebrado para as outras conversas (apagar ou renomear o que está em uso): avise o Tech Lead antes. Quem refaz o espelho é o Tech Lead, pela receita da pasta.
+- **O espelho envelhece** quando alguém muda a produção por fora. Não responde, ou não bate com o que o desenho supõe: BLOQUEADO, com o que viu.
+
+#### Banco local: só em projeto sem espelho
+
+Cada banco local ligado ocupa memória e processador da máquina do dono, e ninguém lembra de desligar o que outro criou. E banco montado de foto nasce com função e tabela abertas para quem não está logado: permissão provada nele não vale como prova do que acontece em produção.
+
+- **Um banco local por projeto, sempre o mesmo**, registrado no `.claude/konoha.json` do projeto, campo `banco_local`: `{"pasta": "<onde fica>", "nome": "<nome do banco>"}`. Todo agente usa esse. **Proibido criar outro** (outra pasta, outro `project_id`, `docker run` de Postgres solto).
+- **Não tem nem espelho nem banco local registrado:** o agente para as partes de banco e devolve (BLOQUEADO: "sem banco de teste registrado"). Quem monta é o Tech Lead, uma vez, e registra.
+- **Reaproveite, não recrie.** Ligue com `supabase start` na pasta registrada. Cada teste cria os próprios dados, com identificadores novos, e não apaga o banco. Montar do zero (`supabase db reset`) só quando a tarefa muda a estrutura do banco (migration nova).
+- **Terminou, desligue:** `supabase stop` na pasta registrada, **sem** `--no-backup` (isso apaga os dados). Se esquecer, o vigia automático desliga depois de 2 horas sem uso.
 
 ### Pistas: quem confere depende do risco
 
@@ -158,7 +164,7 @@ O Tech Lead põe cada tarefa numa pista **antes de começar** e diz qual nas ins
 | Pista | A tarefa mexe em... | Quem trabalha e confere |
 |---|---|---|
 | **Rápida** | Só tela: texto, cor, layout, componente que só mostra | Implementador, com a tela aberta mostrando certo. Sem Arquiteto, Testes, Security ou Revisor. |
-| **Normal** (**a pista de todo pedido**, inclusive com banco e função do servidor) | Qualquer funcionalidade, migration que acrescenta coisa, função do servidor | Arquiteto (uma chamada, só se mexe em banco ou função do servidor) + Implementador (constrói e prova ao vivo: tela e banco local) + Revisor (uma leitura, no fim da tarefa). |
+| **Normal** (**a pista de todo pedido**, inclusive com banco e função do servidor) | Qualquer funcionalidade, migration que acrescenta coisa, função do servidor | Arquiteto (uma chamada, só se mexe em banco ou função do servidor) + Implementador (constrói e prova ao vivo: tela e banco de teste) + Revisor (uma leitura, no fim da tarefa). |
 | **Completa** | Dinheiro; dado de cliente; quem vê o quê entre empresas; algo que apaga dados; ou o dono pediu "faz com cuidado" | Arquiteto + Security (uma vez, **no desenho**, antes de construir) + Implementador + Testes (uma vez, no fim da tarefa) + Revisor (uma vez, no fim). |
 
 - **No máximo três fatias por tarefa.** Fatia grande custa menos que esteira longa.

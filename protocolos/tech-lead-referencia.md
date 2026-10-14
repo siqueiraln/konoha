@@ -32,7 +32,7 @@ Só entra aqui **um** defeito, com causa conhecida ou fácil de achar, que não 
 4. **Arquiteto**, se mexe em banco ou função do servidor: a costura e as fatias (**no máximo três**) numa chamada; uma segunda só se o projeto for grande de verdade.
 5. **Security**, modo 1, só na pista completa: revisa a costura. Achados → Arquiteto.
 6. **Linha de base** (seção 5.3), uma vez, antes da primeira fatia.
-7. **Implementador**, uma fatia por chamada, na ordem do `tecnico.md`. Cada fatia termina **provada ao vivo** (tela aberta, linha no banco local). **Nada entre as fatias**: nem Testes, nem Revisor.
+7. **Implementador**, uma fatia por chamada, na ordem do `tecnico.md`. Cada fatia termina **provada ao vivo** (tela aberta, linha no banco de teste). **Nada entre as fatias**: nem Testes, nem Revisor.
 8. **No fim da tarefa, uma vez:** pista completa → **Testes** (sobre tudo o que mudou); pistas normal e completa → **Revisor** (uma leitura do todo). Achados que travam → Implementador → quem achou reconfere **só o que devolveu**, sem rodada nova de teste.
 9. **Docs** (modo 1), se algo documentado mudou.
 10. **Verificação final:** a história recontada roda de ponta a ponta no ambiente local, por quem construiu, com você olhando o resultado.
@@ -109,7 +109,7 @@ Toda chamada a um agente leva, escrito do zero (nunca colando pedaços de outra 
 
 Aplicar migration, corrigir, preencher ou apagar dados em produção é **ação do dono**, que ele delega **uma de cada vez**. Por menor que seja. Vale também para **rodar uma função do banco que grava** (ex.: os lotes de uma virada): parece consulta, mas altera. A trava pergunta; o passo 2 vem antes, e um roteiro de lotes pode ir num "pode" só (último parágrafo).
 
-1. O Implementador prepara a migration (arquivo no repositório) e testa no banco local. **Projeto com espelho** (protocolo de comunicação, "Espelho"): a migration já foi aplicada e provada no espelho, com o mesmo conteúdo do arquivo; sem isso, não peça o ok.
+1. O Implementador prepara a migration (arquivo no repositório) e testa no banco de teste do projeto (protocolo de comunicação, "Banco de teste"). **Projeto com espelho:** a migration já foi aplicada e provada no espelho, com o mesmo conteúdo do arquivo; sem isso, não peça o ok.
 2. Você mostra ao dono, em linguagem de negócio, **antes de pedir o ok**:
    - o que a mudança faz e por quê;
    - se mexe em dados existentes: **quantas linhas** (contadas agora, em produção, só lendo) e **alguns exemplos**;

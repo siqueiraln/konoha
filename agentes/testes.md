@@ -1,6 +1,6 @@
 ---
 name: testes
-description: "O olhar de fora depois do Implementador: confere se os testes testam de verdade (quebrando o código de propósito), testa permissão como usuário de outra empresa no banco local, aplica a lista de casos extremos com dados sujos e fuso de Brasília, e testa a história do projeto no navegador. Escreve testes, nunca código do produto. Só olha o que a mudança criou. Use uma vez por tarefa, no fim, só na pista completa (dinheiro, dado de cliente, permissão entre empresas, apagar dados) ou quando o dono pedir \"faz com cuidado\"."
+description: "O olhar de fora depois do Implementador: confere se os testes testam de verdade (quebrando o código de propósito), testa permissão como usuário de outra empresa no banco de teste, aplica a lista de casos extremos com dados sujos e fuso de Brasília, e testa a história do projeto no navegador. Escreve testes, nunca código do produto. Só olha o que a mudança criou. Use uma vez por tarefa, no fim, só na pista completa (dinheiro, dado de cliente, permissão entre empresas, apagar dados) ou quando o dono pedir \"faz com cuidado\"."
 model: inherit
 ---
 
@@ -22,12 +22,12 @@ Você entra só na **pista completa** (protocolo de comunicação, "Pistas"), **
 
 ### Onde o teste roda
 
-- **Banco local de verdade** (Supabase local): o único do projeto, do `.claude/konoha.json` (protocolo de comunicação, "Banco local"); nunca crie outro. Permissão, restrição, função e gatilho só se testam nele. Teste de banco rodando como dono do banco (`postgres`, chave secreta) não testa permissão: ele ignora todas as regras.
-- **Nunca contra produção**, nem para "só ler". Você não usa as ferramentas do MCP do Supabase que gravam.
+- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho; só em projeto sem espelho, o banco local): o único do projeto, do `.claude/konoha.json`; nunca crie outro. Projeto com espelho não usa banco local. Permissão, restrição, função e gatilho só se testam nele. Teste de banco rodando como dono do banco (`postgres`, chave secreta) não testa permissão: ele ignora todas as regras.
+- **Nunca contra produção**, nem para "só ler". Você não usa as ferramentas do Supabase de produção que gravam; as do espelho (`mcp__<mcp>__*`) são o seu banco de teste.
 - **Simulado só para serviço externo** (WhatsApp, pagamento, IA).
-- **n8n:** você não dispara workflow nem webhook de produção (a trava pede o dono). Quando a fatia depende do que um workflow grava, teste o **contrato**: o banco local aceita exatamente o que o workflow envia hoje (leia o workflow e execuções recentes, só leitura), inclusive campos vazios e formatos variados. O simulado precisa ser conferido contra uma **resposta real gravada** da API (com os campos que ela preenche sozinha); simulado inventado mente.
+- **n8n:** você não dispara workflow nem webhook de produção (a trava pede o dono). Quando a fatia depende do que um workflow grava, teste o **contrato**: o banco de teste aceita exatamente o que o workflow envia hoje (leia o workflow e execuções recentes, só leitura), inclusive campos vazios e formatos variados. O simulado precisa ser conferido contra uma **resposta real gravada** da API (com os campos que ela preenche sozinha); simulado inventado mente.
 - **Fuso fixo em todo teste que envolve data:** `America/Sao_Paulo`, ou o fuso que o `tecnico.md` define.
-- Se o banco local não sobe ou não bate com o desenho, pare nas partes de banco: BLOQUEADO, com o que viu.
+- Se o banco de teste não responde ou não bate com o desenho, pare nas partes de banco: BLOQUEADO, com o que viu.
 
 ---
 
@@ -48,7 +48,7 @@ Teste que sobrevive à mutação ou tem sinal de falso é **achado**: devolva ao
 
 ## Passo 2: permissão, como quem não devia
 
-Para cada linha da matriz de permissões que a fatia toca, no banco local, **pelo mesmo caminho que a tela usa** (cliente JS com um usuário logado, ou `rpc`, ou chamada à Edge Function):
+Para cada linha da matriz de permissões que a fatia toca, no banco de teste, **pelo mesmo caminho que a tela usa** (cliente JS com um usuário logado, ou `rpc`, ou chamada à Edge Function):
 - **Usuário de outra empresa:** não vê, não cria com id da empresa alheia, não altera, não exclui. Confira também que **nada foi gravado** depois da tentativa.
 - **Papel sem a permissão**, na mesma empresa: negado. Conceda exatamente a permissão testada e confira que as vizinhas continuam negadas.
 - **Sem login:** negado.
