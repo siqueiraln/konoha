@@ -22,8 +22,7 @@ Só entra aqui **um** defeito, com causa conhecida ou fácil de achar, que não 
 4. **Implementador:** reproduza o bug (ao vivo; com teste escrito só se for permissão, data ou dinheiro) → conserto → prove que sumiu, uma vez. O conserto vai na causa; os irmãos com o mesmo defeito só se o dono pediu.
 5. **Conferência conforme a pista:** rápida, nenhuma; normal, Revisor; completa, Security (no desenho do conserto, antes), Testes e Revisor.
 6. **Docs**, se algo documentado mudou.
-7. Bug que escapou da lista de casos extremos: acrescente a linha.
-8. PR (seção 4).
+7. PR (seção 4).
 
 ### 1.3 Projeto (algo novo, ou mudança de regra de negócio)
 1. **PO**, modo 1: documento de projeto. Vai **direto ao dono**: ninguém testa o plano (decisão do dono, 10/10/2026).
@@ -275,7 +274,7 @@ O que procurar e o que fazer:
 
 **Arquivadas:** em 10/10/2026 o dono mandou arquivar o que os agentes tinham criado no meio de outras coisas (achados, pendências, furos de segurança conhecidos). Arquivar não apaga. **Quando o dono pedir para cuidar de um tema** ("vamos ver a segurança do n8n"), antes de criar tarefa nova procure nas arquivadas (`list_issues` com `includeArchived: true` e `query`), desarquive o que for daquele tema, crie a mãe no formato acima e pendure as velhas como filhas, reescritas no formato (título de WhatsApp, dono em cima, bastidores embaixo). O dono não lembra do que foi arquivado; você lembra por ele.
 
-**Descoberta:** coisa antiga que aparecer no caminho e não impedir o pedido de funcionar **não vira tarefa nem aviso** (protocolo de comunicação, seção 0). Só entram no quadro: o conserto grande de porta nova que o dono mandou para **depois**, e ideia que o dono mandou guardar. Vazamento acontecendo agora é emergência.
+**Descoberta:** coisa antiga que aparecer no caminho e não impedir o pedido de funcionar **não vira tarefa nem aviso** (protocolo de comunicação, seção 0). Só entra no quadro ideia que o dono mandou guardar. Vazamento acontecendo agora é emergência.
 
 **Ao retomar:** tire a foto do quadro, confira a trava, leia a tarefa e os comentários, depois o andamento, e confira contra as fontes. Se o quadro estiver errado, as fontes vencem: corrija o quadro.
 
@@ -343,7 +342,7 @@ Próximo passo: <a primeira coisa a fazer ao voltar>
 — <título desta conversa> · <marca>
 ```
 
-Achado no caminho: coisa antiga não vai ao dono (protocolo de comunicação, seção 0); porta nova que a mudança abre segue a seção 5 do agente.
+Achado no caminho que não impede o combinado: uma linha `Vi e não mexi`, nunca uma pergunta ao dono (protocolo de comunicação, seção 0).
 
 ## 7. Recuperação
 
@@ -360,5 +359,5 @@ Todos os agentes usam o mesmo modelo da conversa (`inherit`), por enquanto. Se o
 ## 9. Lições
 
 Ao fechar um projeto ou conserto:
-- Linhas novas da lista de casos extremos, propostas pelos agentes: acrescente.
+- Fato do projeto que o dono precisou repetir (empresa de teste, quem é quem, um jeito de fazer): uma linha no `CLAUDE.md` do projeto, no PR da tarefa.
 - Regra que faltou num guia ou num agente (algo que custou caro e vai se repetir): **proponha** ao dono a mudança no arquivo da empresa, com o caso que a motivou. Não altere guias, protocolos ou agentes da empresa sem o ok dele.

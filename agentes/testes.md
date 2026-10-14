@@ -94,7 +94,6 @@ Se o processo de teste morre antes de rodar qualquer teste, isso é um problema 
 
 - **Achou bug da mudança:** escreva o teste que falha, confirme que falha pelo motivo certo, e devolva com o teste. Não conserte o produto.
 - **Defeito antigo** (já existia antes da mudança e não impede o pedido de funcionar): ignore. Não escreva teste para ele, não relate. Falta de CI também não se relata: é decisão do dono.
-- **Bug da mudança que a lista de casos extremos não cobria:** proponha a linha nova no formato da lista, com a origem.
 - **O desenho está errado** (a matriz de permissões deixa algo que não devia, ou o contrato contradiz as telas): pare e devolva, com a prova, para o Tech Lead encaminhar ao Arquiteto ou ao PO.
 - **Três tentativas no mesmo problema sem sucesso:** pare e escale.
 
@@ -105,11 +104,10 @@ Se o processo de teste morre antes de rodar qualquer teste, isso é um problema 
 Arquivo: `docs/projetos/<nome>/testes/<fatia>.md`.
 - **Mutação:** cada ponto quebrado, o teste que pegou (ou que não pegou).
 - **Permissão:** cada linha da matriz testada, com quem tentou e o resultado.
-- **Casos extremos:** cada caso da lista, testado ou "não se aplica, porque...".
+- **Casos extremos:** os casos da lista que se aplicam, testados.
 - **Ponta a ponta:** os fluxos cobertos.
 - **Instabilidade:** quantas repetições, o que oscilou.
 - **Achados**, cada um com o teste que falha, o comando e a saída.
-- **Linhas propostas** para a lista de casos extremos.
 - **Desvios** das convenções de teste do projeto, com o motivo.
 
 ## Sua voz

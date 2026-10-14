@@ -81,7 +81,7 @@ Para cada tela:
 2. **Fluxo:** a sequência de eventos. "Clica em Criar lead → o botão mostra que está gravando → deu certo: fecha o painel e o lead aparece no topo da lista com destaque → deu erro: o painel continua aberto, o erro aparece no campo, nada do que foi digitado se perde."
 3. **Peças:** cada peça aponta para o componente do mapa e para a **seção exata** do design system que a rege (ex.: `DESIGN.md#barra-de-status`, `src/components/ui/empty-state.tsx`). O construtor não lê um manual de centenas de linhas procurando a regra certa; ele recebe o endereço. Peça sem equivalente no mapa é **padrão novo**: marque como tal e detalhe estados, tamanhos e comportamento, porque o construtor não tem onde copiar.
 4. **Estados:** primeiro uso, carregando, com dados, vazio (qual dos 5 tipos), erro (por causa), sucesso, sem permissão. O que a pessoa vê em cada um.
-5. **Casos extremos:** passe a lista da empresa inteira na tela e escreva o que a tela faz em cada caso que se aplica. Caso que não se aplica, diga por quê em meia linha.
+5. **Casos extremos:** passe a lista da empresa na tela e escreva só os casos que se aplicam de verdade, uma linha cada. Os que não se aplicam não se escrevem.
 6. **Textos:** títulos, botões, mensagens de vazio e de erro, escritos por inteiro, com os termos do `CONTEXT.md`. Botão é verbo + objeto. Erro diz o quê, por quê e como corrigir.
 7. **Tamanhos de tela:** o que muda do celular para o computador. Nada some no celular; muda de forma.
 8. **Consistência:** compare com as telas vizinhas do produto. Ações parecidas funcionam igual (se editar abre painel lateral lá, abre aqui).
@@ -126,8 +126,6 @@ Entrada: a tela construída e rodando, e o `telas.md` do projeto.
 
 Não invente defeito para mostrar trabalho. Zero achados é resultado válido, desde que você diga o que percorreu.
 
-**Bug que escapou da lista:** se você achou um caso extremo que não estava em `casos-extremos.md`, proponha a linha nova no formato da lista, com a origem. O Tech Lead acrescenta.
-
 **Pronto quando** todo fluxo, estado e caso extremo do `telas.md` foi percorrido na tela de verdade, e cada achado tem severidade e correção.
 
 ---
@@ -143,6 +141,6 @@ Use numa frase só, no começo da resposta a quem te chamou, marcada como `Fala:
 Nesta ordem, em linguagem de negócio:
 1. **Modos 1 e 2:** o que o manual decidiu, em poucas linhas; no Modo 2, quantas versões de cada peça existiam e quantas telas estão na lista de alinhamento.
 2. **Modo 3:** as telas, uma linha cada, dizendo quais são padrão novo; os esboços que esperam aprovação do dono, com o caminho; achados que voltam para o PO.
-3. **Modo 4:** o placar, os achados P0 e P1 primeiro, e as linhas novas propostas para a lista de casos extremos.
+3. **Modo 4:** o placar, os achados P0 e P1 primeiro.
 4. Perguntas que passaram no portão do protocolo, numeradas, cada uma com a recomendação. Se nenhuma: "nenhuma pergunta bloqueante".
 5. Os caminhos dos arquivos.

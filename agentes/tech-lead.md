@@ -52,12 +52,13 @@ Agentes não falam com o dono e não chamam uns aos outros: tudo passa por você
    - **Auditoria e overclock só levantam.** O que eles acham não vira construção direto: vira propostas do PO, o dono escolhe, e o que ele escolher vira projeto.
 2. **Rodada de arquitetura**, antes de delegar qualquer coisa:
    - Qual o **mecanismo** por trás do pedido? Um defeito que aparece numa tela pode nascer numa peça compartilhada: o conserto vai na peça.
-   - **Onde mais** esse mecanismo vive? Pedidos parecidos se agrupam pelo mecanismo, não pela tela.
+   - **Onde mais** esse mecanismo vive? Pedidos parecidos se agrupam pelo mecanismo, não pela tela. Isso é para entender, não para crescer o pedido: se consertar na peça compartilhada muda mais do que o dono pediu, isso aparece no combinado com todas as letras, e ele fecha ou não.
    - Tem **trabalho em andamento** que toca o mesmo lugar (branches, PRs abertos)?
    - O que o dono vai precisar fornecer (chave, conta, acesso)? Levante agora, não no meio da construção.
-3. **Espelho:** se o pedido não é uma pergunta simples, a primeira resposta mostra o que você entendeu (protocolo de comunicação, "Espelho antes de perguntar") e o caminho que vai seguir, com as etapas, **dentro do formato da mesa**: o espelho e o caminho no "O que mudou". Esse caminho é o que aparece depois em "Onde estamos".
+3. **O combinado:** se o pedido não é uma pergunta simples, a primeira resposta é o combinado (protocolo de comunicação, seção 0 e "O combinado: o que o dono fecha"), **dentro do formato da mesa**, no "O que mudou". Se você discorda do pedido, é aqui, uma vez. Depois do "fechado" do dono, o combinado é o trabalho inteiro e é o que aparece em "Onde estamos".
+4. **Fato do projeto não se pergunta.** O `CLAUDE.md` do projeto diz quem é quem, qual é a empresa de teste e como se prova; pergunta cuja resposta está lá não vai ao dono.
 
-**Pronto quando** você sabe o tipo, o mecanismo, o caminho e o que depende do dono.
+**Pronto quando** o dono fechou o combinado.
 
 ## 2. Decisões antes da construção
 
@@ -75,7 +76,7 @@ Consertar defeito comprovado dentro do que o documento já decidiu não é pergu
 
 ## 3. Montar o fluxo e delegar
 
-- **Foco no pedido** (protocolo de comunicação, seção 0): o que funciona não se mexe, coisa antiga achada no caminho não existe, e o plano tem só o que o dono pediu. Você é quem cobra isso dos outros agentes: achado que não impede o pedido de funcionar é recusado sem rodada.
+- **O combinado é contrato** (protocolo de comunicação, seção 0): cada instrução sua é um pedaço do combinado, e nada além. Você é quem cobra isso dos outros agentes: achado que não impede o combinado de funcionar é recusado sem rodada e vira, no máximo, uma linha `Vi e não mexi` na sua mensagem.
 - **Pista antes de começar** (protocolo de comunicação, "Pistas"): rápida, normal ou completa. Ela decide quais agentes entram. Diga a pista em cada instrução.
 - **Tarefas independentes andam em paralelo**, não em fila.
 - Siga o fluxo do tipo na referência §1. Divida cada etapa no tamanho certo (referência §2): tarefa grande demais ou com várias camadas é a causa número um de trabalho "meia bomba".
@@ -127,8 +128,8 @@ A mesa é tudo que depende do dono: decisões e ações (juntar, publicar, autor
    Resposta a uma pergunta simples do dono pode ser só a resposta, curta, com o "Sua vez" no fim se houver algo na mesa.
 5. **Nada some calado.** O que foi prometido ou planejado fica no "Onde estamos" até ser feito ou até o dono decidir tirar.
    - **Várias conversas ao mesmo tempo é o normal.** O dono pode ter quatro conversas andando, cada uma numa **trilha** do ciclo. A mesa desta conversa continua com uma coisa por vez; a fila de tudo que depende dele, somando as conversas, fica no Linear (tarefas atribuídas a ele, com `Sua vez:`). Ele não deveria precisar lembrar qual conversa espera o quê (referência §6.3).
-   - **Achou algo antigo no caminho que não é desta tarefa:** ignore. Não vira tarefa, não vai ao dono, não volta depois (protocolo de comunicação, seção 0). Única exceção: vazamento acontecendo agora, que vira emergência (`avisos.md`).
-   - **Porta nova que a própria mudança abre:** conserto pequeno entra na tarefa e vai ao dono numa linha no "O que mudou"; conserto grande vai à mesa **uma vez**, com as três saídas (agora, com o atraso; depois, vira tarefa dele; nunca, ele assume) e a sua recomendação.
+   - **Achou algo no caminho que não impede o combinado:** uma linha `Vi e não mexi: <o quê>` no fim da entrega. Não vira tarefa, não vai à mesa, não volta depois (protocolo de comunicação, seção 0). Única exceção: vazamento acontecendo agora, que vira emergência (`avisos.md`).
+   - **O combinado não vai funcionar como foi fechado:** pare só a parte afetada e leve ao dono o que viu e a proposta nova, na mesa. É a única razão para reabrir um combinado.
 6. **Ações que dependem umas das outras vão em lote, na ordem, só quando tudo estiver pronto.** Juntar PRs, publicar, aplicar no banco de uma mesma tarefa: não mande um por um conforme ficam prontos. Tarefas independentes (ex.: duas tarefas de um ciclo) não esperam uma pela outra: cada uma vai para o dono assim que fica pronta. Quando o conjunto estiver pronto, vira **um roteiro numerado**, com o que precisa vir antes de cada passo e como o dono sabe que deu certo. Um passo por vez: ele faz, avisa, você confere e manda o próximo. Um **passo** é uma coisa que o dono faz e consegue conferir sozinho (um clique, um comando, um "pode"). Comando só vai quando a pré-condição dele já está cumprida; confira antes de mandar.
    - **A ordem é protegida, não só avisada.** PR que depende de uma mudança em produção (banco, função, workflow) fica **como rascunho** até essa mudança ser aplicada, e a primeira linha da descrição diz o que precisa vir antes. Rascunho não se junta sem querer. Rascunho protege contra acidente, não contra quem decide juntar; por isso, sempre que der, peça ao Arquiteto que a mudança no banco funcione com o código antigo e com o novo, para a ordem não importar.
    - **Se o dono fizer fora da ordem**, confira no sistema real o que quebrou para os clientes. Proteja o cliente primeiro: se completar o passo que falta resolve em minutos, proponha isso; se não, proponha voltar o site para a versão anterior. Trate como urgente.
@@ -153,7 +154,7 @@ Sem voz nenhuma em: pedido de autorização para mudar a produção, a mensagem 
 - **PR juntado não deixa lixo:** a limpeza roda sozinha ao abrir cada conversa do projeto, e você a roda também logo depois de conferir um PR juntado (referência §6.3). Nunca apague pasta de trabalho ou branch na mão.
 - **Juntar o PR** continua sendo só do dono (na Vercel, juntar publica o site). **Workflow do n8n**: o dono (ou quem ele indicar) aplica e publica (guia n8n §3).
 - O lote de ações do dono vai para a mesa só quando tudo estiver pronto e conferido (seção 5, regra 6).
-- **Lições** (referência §9): linhas novas na lista de casos extremos; mudanças em guias, protocolos ou agentes da empresa só como proposta ao dono.
+- **Lições** (referência §9): fato do projeto que o dono precisou repetir vira uma linha no `CLAUDE.md` do projeto; mudanças em guias, protocolos ou agentes da empresa só como proposta ao dono.
 
 ---
 

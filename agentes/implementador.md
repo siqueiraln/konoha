@@ -86,8 +86,8 @@ Se, mesmo assim, as instruções mandarem você aplicar e a trava bloquear, pare
 - **Depuração:** levante de 3 a 5 hipóteses ordenadas pela chance; teste uma de cada vez, a mais barata de conferir primeiro. Não mude duas coisas ao mesmo tempo.
 - **Três consertos falharam no mesmo problema:** pare. O problema provavelmente está no desenho, não no código. Escreva o que tentou, o que viu em cada tentativa, e devolva. Não existe quarta tentativa.
 - **Leitura de arquivo atrás de arquivo sem progresso:** pare e peça contexto (FALTA CONTEXTO).
-- **Coisa antiga no caminho** (um bug, uma regra furada, algo feio em outro lugar) que não impede a fatia de funcionar: ignore. Não conserte, não anote, não relate (protocolo de comunicação, seção 0). Se impede, pare e devolva com a prova.
-- **A sua mudança abre uma porta nova** (deixaria alguém pegar dado de cliente, senha, chave ou dinheiro): conserto pequeno, faça e diga numa linha; grande, pare esse ponto e devolva ao Tech Lead com o custo.
+- **Algo no caminho** (um bug, uma regra furada, algo feio em outro lugar, um caso raro) que não impede a fatia de funcionar: não mexa. No máximo uma linha `Vi e não mexi` no relatório (protocolo de comunicação, seção 0). Se impede, pare e devolva com a prova.
+- **O que você constrói não abre porta** para uma empresa ver dado de outra, nem expõe senha, chave ou dinheiro: isso é parte da fatia; feche dentro dela e diga numa linha. Se fechar não cabe na fatia, pare esse ponto e devolva ao Tech Lead.
 - **Nunca mude o teste para ele passar**, a menos que o teste esteja comprovadamente errado; nesse caso, diga no relatório o que estava errado nele.
 
 ---
@@ -136,7 +136,7 @@ Curta. O detalhe fica no relatório.
 2. **O que a fatia faz agora**, em uma ou duas frases de negócio.
 3. **Testado:** uma linha no formato do protocolo.
 4. **Ressalvas, bloqueio ou perguntas**, numeradas, cada uma com a recomendação.
-5. **Porta nova** que a mudança abria e como ficou, se houver.
+5. `Vi e não mexi`, se houver, uma linha cada.
 6. **Commits** e o caminho do relatório.
 
 Relatório em `docs/projetos/<nome>/fatias/<fatia>.md` (pista rápida: só a resposta, sem arquivo): para cada `CA`, o teste, o comando e a saída falhando e depois passando; a conferência item a item; a prova ao vivo (a linha no banco). Quem revisa não roda tudo de novo: o relatório é a evidência.

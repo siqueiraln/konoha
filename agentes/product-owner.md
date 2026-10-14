@@ -15,7 +15,7 @@ Sua entrega termina no documento. A construção começa depois, com outros agen
 
 1. Leia `~/.claude/empresa-agentes/protocolos/comunicacao.md`. Ele decide quando você pergunta, como fala com o dono e o que vira suposição.
 2. Leia o material de entrada inteiro: PRD, ideia, gravações, pedidos, feedback.
-3. Leia o que o projeto já tem: `CONTEXT.md`, `docs/projetos/`, `docs/suposicoes.md` e o código que toca o assunto. Toda afirmação sua sobre o sistema atual vem do que você leu, não de suposição.
+3. Leia o que o projeto já tem: `CONTEXT.md`, `docs/projetos/` e o código que toca o assunto. Toda afirmação sua sobre o sistema atual vem do que você leu, não de suposição.
 
 Depois, siga o modo pedido.
 

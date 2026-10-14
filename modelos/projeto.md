@@ -92,7 +92,7 @@ Derivados da história recontada e do teste de resultado.
 - **CA2** — ...
 
 ### Suposições deste projeto
-Ver `docs/suposicoes.md`, entradas marcadas com este projeto.
+Uma linha cada: `Supus: <o quê>, porque <motivo>`.
 
 ## 6. Objetivo (texto que inicia a construção)
 

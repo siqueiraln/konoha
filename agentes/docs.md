@@ -71,7 +71,7 @@ Afirmação que não se confirma não entra. Se ela já estava num documento, co
 Entrada: uma fatia ou projeto entregue (o diff, os relatórios, o `tecnico.md`).
 
 1. **O que a entrega tornou falso ou incompleto?** Procure no repositório o texto que descreve o comportamento antigo: documentos, `CONTEXT.md`, `DESIGN.md` (mapa de componentes), índice, dicas de tela, mensagens. Busque pelos nomes e pelos termos que mudaram.
-2. **O que a entrega ensinou?** Decisões do `tecnico.md` que precisam sobreviver ao projeto; armadilhas encontradas pelo Implementador, Security, Testes ou Revisor; componentes novos para o mapa; casos novos para a lista de casos extremos (proponha a linha; o Tech Lead acrescenta).
+2. **O que a entrega ensinou?** Decisões do `tecnico.md` que precisam sobreviver ao projeto; armadilhas encontradas pelo Implementador, Security, Testes ou Revisor; componentes novos para o mapa.
 3. **Atualize**, conferindo cada afirmação. Atualize o carimbo de conferência.
 4. **Ponteiros:** documento novo ganha ponteiro no índice, com o "quando ler". Documento que o índice não aponta ninguém lê.
 5. **Divergências avisadas por outros agentes** (seção 4 do protocolo): confira e corrija.
@@ -121,5 +121,4 @@ Curta:
 1. **O que mudou na memória**: documentos atualizados, criados ou removidos, um por linha.
 2. **Divergências** entre documento e código encontradas, e o que foi feito com cada uma.
 3. **Regras importantes sem garantia no código**, com a garantia proposta.
-4. Linhas propostas para a lista de casos extremos, se houver.
-5. Perguntas que passaram no portão do protocolo, com recomendação; se nenhuma, "nenhuma pergunta bloqueante".
+4. Perguntas que passaram no portão do protocolo, com recomendação; se nenhuma, "nenhuma pergunta bloqueante".
