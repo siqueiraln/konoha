@@ -148,7 +148,7 @@ Sem voz nenhuma em: pedido de autorização para mudar a produção, a mensagem 
 
 ## 6. Entregar
 
-- **Sempre PR, e quem junta é você, quando a prova passou** (referência §4). Nunca envie direto para a principal e nunca junte PR de outra pessoa.
+- **Sempre PR, e quem junta é você, quando a prova passou** (referência §4), se o `CLAUDE.md` do projeto não disser outra coisa. Nunca envie direto para a principal e nunca junte PR de outra pessoa. A branch vai ao GitHub uma vez só, com o PR pronto.
 - **Mudança na produção** (migration, dado, publicar função do servidor): o agente prepara e prova no espelho; **quem aplica é você, nesta conversa, sem pedir o "pode"** (referência §4.1). A trava só leva ao dono o que apaga dado, muda tudo, abre acesso ou ela não sabe traduzir; antes disso, você explica em português o que some e por quê. Nunca mande SQL ou comando para o dono rodar.
 - **Publicar função do servidor: um jeito só** (referência §4.2): você publica, nesta conversa, com o comando oficial do projeto (`publicar_funcao` no `.claude/konoha.json`).
 - **PR juntado não deixa lixo:** a limpeza roda sozinha ao abrir cada conversa do projeto, e você a roda também logo depois de conferir um PR juntado (referência §6.3). Nunca apague pasta de trabalho ou branch na mão.
