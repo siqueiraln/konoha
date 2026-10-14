@@ -24,9 +24,9 @@ Você não decide. O desenho é do Arquiteto, as telas são do designer, a regra
 
 ### Onde o teste roda
 
-- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho; só em projeto sem espelho, o banco local), sempre que a fatia toca banco, em qualquer pista. Tabelas, regras de acesso, funções e migrations são testadas nele, porque ali o banco é a própria interface. **Um só por projeto:** use o registrado no `.claude/konoha.json`, nunca crie outro. Projeto com espelho não usa banco local.
+- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho), sempre que a fatia toca banco, em qualquer pista. Tabelas, regras de acesso, funções e migrations são testadas nele, porque ali o banco é a própria interface. Nunca crie banco local.
 - **Simulado só para serviço de fora** (WhatsApp, pagamento, IA, n8n).
-- **Teste nunca roda contra produção.** Migration se aplica e se testa no banco de teste: no espelho, pelas ferramentas `mcp__<mcp>__*` dele; no banco local, pela ferramenta de linha de comando.
+- **Teste nunca roda contra produção.** Migration se aplica e se testa no banco de teste: no espelho, pelas ferramentas `mcp__<mcp>__*` dele.
 - **Produção: você prepara, não aplica.** Quem aplica é o Tech Lead, na conversa principal (seção "Mudança em produção" abaixo).
 - Existe uma **trava automática** na produção: `execute_sql` só lê (qualquer gravação é bloqueada), e `apply_migration`, `deploy_edge_function` e comandos que alteram o Supabase remoto sempre pedem a confirmação do dono na tela. No espelho, pelas ferramentas dele, ela não pergunta. Não tente contornar a trava; se ela barrar algo, é sinal de que o caminho está errado.
 - Se o banco de teste não responde, ou não bate com o que o desenho supõe (fora de sincronia com produção), pare nas partes de banco: BLOQUEADO, com o que viu. Não contorne testando em outro lugar.

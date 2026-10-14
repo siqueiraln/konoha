@@ -1,7 +1,7 @@
 # Guia: banco de dados e Supabase
 
 Lido por seção. O Arquiteto e o Implementador leem só a seção que a tarefa toca.
-Fontes: `pesquisa/04-arquiteto*.md`. Fatos do Supabase conferidos em 2026-09-26; antes de decidir algo que dependa deles, confira de novo pelo MCP do Supabase (`search_docs`), porque a plataforma muda.
+Fatos do Supabase conferidos em 2026-09-26; antes de decidir algo que dependa deles, confira de novo pelo MCP do Supabase (`search_docs`), porque a plataforma muda.
 
 **Sobre o MCP do Supabase:** a busca na documentação (`search_docs`) e a leitura do banco real (`list_tables`, `list_migrations`, `list_edge_functions`, `get_advisors`) são as fontes principais. Leitura é livre. **Qualquer alteração em produção só com autorização do dono, para aquela mudança** (referência do Tech Lead §4.1), aplicada pelo Tech Lead na conversa principal com `apply_migration` (o Implementador prepara). Uma **trava automática** (`~/.claude/empresa-agentes/hooks/proteger-banco.py`) garante isso: `execute_sql` que grava é bloqueado; `apply_migration`, `deploy_edge_function` e comandos que alteram o Supabase remoto sempre pedem a confirmação do dono. Antes de qualquer uso, confirme a qual projeto o MCP está ligado.
 

@@ -62,17 +62,16 @@ Conserto pontual pula o documento. Pergunta vai direto ao Pesquisador. Emergênc
 | [`guias/`](guias) | Guias por tecnologia (banco/Supabase, React, n8n) |
 | [`modelos/`](modelos) | Modelos de documento de projeto, manual de estilo e overclock |
 | [`hooks/`](hooks) | O que não depende de o agente lembrar (abaixo) |
-| [`pesquisa/`](pesquisa) | A pesquisa que deu origem a cada agente. Ela cita às vezes o conjunto de agentes que serviu de ponto de partida e os casos reais de um projeto; esse material não está aqui |
 
 ## Regra escrita falha. Mecanismo segura.
 
 A lição mais cara da vila: agente esquece regra, mesmo explícita. O que importa de verdade vira **gancho** do Claude Code, que roda sozinho:
 
-- **🔒 Trava do banco** ([`proteger-banco.py`](hooks/proteger-banco.py)): leitura livre; gravação direta bloqueada; mudança em produção só com o "pode" do dono, com a pergunta **traduzida para português** e ⚠️ no que apaga dados ou abre acesso ([`traduzir.py`](hooks/traduzir.py)).
+- **🔒 Trava do banco** ([`proteger-banco.py`](hooks/proteger-banco.py)): leitura livre; na produção, o que só acrescenta ou ajusta passa, e o que apaga dado, muda tudo ou abre acesso pergunta ao dono, **em português**, com ⚠️ ([`traduzir.py`](hooks/traduzir.py)).
 - **📋 Quadro do Linear** ([`quadro-linear.py`](hooks/quadro-linear.py)): toda conversa começa sabendo o que está andando e em qual outra conversa, e fica sabendo quando algo muda lá fora. Tarefa pega por uma conversa fica travada com o nome dela.
 - **🗂️ Barra lateral** ([`barra-lateral.py`](hooks/barra-lateral.py)): a conversa com tarefa não termina a resposta com a barra desatualizada. Título com o assunto, grupo com o andamento, e `Sua vez` quando está esperando o dono.
 - **🧹 Limpeza** ([`limpeza-git.py`](hooks/limpeza-git.py)): PR juntado não deixa pasta de trabalho nem branch para trás, no computador e no GitHub. Só apaga o que tem certeza de estar na versão principal e sem trabalho pendente.
-- **💤 Vigia do banco local** ([`vigia-banco.py`](hooks/vigia-banco.py)): banco local parado há mais de 2 horas é desligado sozinho. Desligar não apaga dados.
+- **💤 Vigia do banco local** ([`vigia-banco.py`](hooks/vigia-banco.py)): banco local parado há mais de 2 horas é desligado sozinho. Desligar não apaga dados. (O banco de teste agora é o espelho; o vigia só desliga sobra antiga.)
 - **🧪 Testes e replay**: cada gancho tem teste, e o [`replay-trava.py`](hooks/replay-trava.py) roda a trava nas chamadas reais das conversas antes de qualquer mudança, para ela não encher o dono de perguntas.
 
 ## Instalar

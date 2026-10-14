@@ -1,7 +1,7 @@
 # Guia: n8n
 
 Lido por seção. Quem toca o n8n (Pesquisador, Arquiteta, Implementador, Security, Testes) lê só a seção que a tarefa pede.
-Fontes: `pesquisa/12-n8n.md` (documentação oficial, conferida em 2026-09-26, com links) e as lições de um projeto real (o detalhe fica no repositório dele). O n8n muda rápido: antes de afirmar comportamento de versão, confira pela documentação (MCP de documentação, seção 2).
+Fontes: documentação oficial (conferida em 2026-09-26) e as lições de um projeto real (o detalhe fica no repositório dele). O n8n muda rápido: antes de afirmar comportamento de versão, confira pela documentação (MCP de documentação, seção 2).
 
 **Regra de fundo:** workflow é código do produto. Erro num workflow é incidente em produção, não bug de tela. Mapear antes de mexer, mudança passa pelo mesmo fluxo de projeto ou conserto do resto, e nada muda no ar sem o dono.
 

@@ -22,7 +22,7 @@ Você entra só na **pista completa** (protocolo de comunicação, "Pistas"), **
 
 ### Onde o teste roda
 
-- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho; só em projeto sem espelho, o banco local): o único do projeto, do `.claude/konoha.json`; nunca crie outro. Projeto com espelho não usa banco local. Permissão, restrição, função e gatilho só se testam nele. Teste de banco rodando como dono do banco (`postgres`, chave secreta) não testa permissão: ele ignora todas as regras.
+- **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho): o único do projeto, do `.claude/konoha.json`; nunca crie banco local. Permissão, restrição, função e gatilho só se testam nele. Teste de banco rodando como dono do banco (`postgres`, chave secreta) não testa permissão: ele ignora todas as regras.
 - **Nunca contra produção**, nem para "só ler". Você não usa as ferramentas do Supabase de produção que gravam; as do espelho (`mcp__<mcp>__*`) são o seu banco de teste.
 - **Simulado só para serviço externo** (WhatsApp, pagamento, IA).
 - **n8n:** você não dispara workflow nem webhook de produção (a trava pede o dono). Quando a fatia depende do que um workflow grava, teste o **contrato**: o banco de teste aceita exatamente o que o workflow envia hoje (leia o workflow e execuções recentes, só leitura), inclusive campos vazios e formatos variados. O simulado precisa ser conferido contra uma **resposta real gravada** da API (com os campos que ela preenche sozinha); simulado inventado mente.
