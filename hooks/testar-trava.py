@@ -23,14 +23,35 @@ CASOS = [
     ("mcp__supabase__execute_sql", {"query": "with x as (select 1) select * from x"}, LIVRE),
     ("mcp__supabase__list_tables", {}, LIVRE),
     # Supabase: gravação
-    ("mcp__supabase__execute_sql", {"query": "UPDATE contatos SET nome = 1"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "with d as (delete from x returning *) select * from d"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "select cron.schedule('a','* * * * *','select 1')"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "DO $$ BEGIN PERFORM 1; END $$"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "select 1; drop table contatos"}, NEGA),
-    ("mcp__claude_ai_Supabase__execute_sql", {"query": "insert into x values (1)"}, NEGA),
-    ("mcp__claude_ai_Supabase__apply_migration", {"name": "x", "query": "create table t()"}, PERGUNTA),
-    ("mcp__supabase__deploy_edge_function", {}, PERGUNTA),
+    # Produção (14/10): o que só acrescenta ou ajusta passa; o que apaga, muda tudo ou abre acesso pergunta
+    ("mcp__supabase__execute_sql", {"query": "UPDATE contatos SET nome = 1"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "with d as (delete from x returning *) select * from d"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "select cron.schedule('a','* * * * *','select 1')"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "DO $$ BEGIN PERFORM 1; END $$"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "select 1; drop table contatos"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__execute_sql", {"query": "insert into x values (1)"}, LIVRE),
+    ("mcp__claude_ai_Supabase__apply_migration", {"name": "x", "query": "create table t()"}, LIVRE),
+    ("mcp__supabase__deploy_edge_function", {}, LIVRE),
+    ("mcp__supabase__deploy_edge_function", {"name": "aberta", "verify_jwt": False}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "update contatos set nome = 'x' where id = 5"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "insert into x select * from y where a = 1"}, LIVRE),
+    ("mcp__supabase__apply_migration", {"name": "x", "query": "alter table x add column y text; create index on x (y);"}, LIVRE),
+    ("mcp__supabase__apply_migration", {"name": "x", "query": "create policy p on x for select to authenticated using (company_id = minha_empresa())"}, LIVRE),
+    ("mcp__supabase__apply_migration", {"name": "x", "query": "alter table x drop column y"}, PERGUNTA),
+    ("mcp__supabase__apply_migration", {"name": "x", "query": "grant select on public.x to anon"}, PERGUNTA),
+    ("mcp__supabase__apply_migration", {"name": "x", "query": "create table t(); DO $$ BEGIN EXECUTE 'drop table y'; END $$"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "truncate x"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where id = 1"}, PERGUNTA),
+    # Empresa de teste: apagar só nela passa
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111'"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "DELETE FROM customers WHERE company_id='11111111-1111-1111-1111-111111111111' AND created_at > now() - interval '1 day'"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111' or true"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '22222222-2222-2222-2222-222222222222'"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111'; delete from customers where id = 9"}, PERGUNTA),
+    # Texto e comentário não escondem comando
+    ("mcp__supabase__execute_sql", {"query": "insert into x values ('a--b'); drop table y"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "insert into x values ('a'';drop table y')"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "insert into x values (1) /* ; */ ; drop table y"}, PERGUNTA),
     # Supabase: terminal
     ("Bash", {"command": "npx supabase db push"}, PERGUNTA),
     ("Bash", {"command": "supabase db reset"}, LIVRE),
@@ -82,11 +103,11 @@ CASOS = [
     ("Bash", {"command": 'curl -s "https://app.automacao.exemplo.com.br/webhook/enviozap?to=5582"'}, PERGUNTA),
     ("Bash", {"command": 'curl -s -X POST -H "X-N8N-API-KEY: $K" "$N8N_URL/api/v1/workflows/abc/activate"'}, PERGUNTA),
     ("Bash", {"command": "npx n8n-cli workflow activate abc"}, PERGUNTA),
-    ("mcp__supabase__execute_sql", {"query": "set statement_timeout='60s'; delete from follow_ups where id = 1"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "set local role service_role; select 1"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "select set_config('role', 'service_role', true)"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "begin; insert into x values (1); commit;"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "create or replace function public.x() returns int language sql as $$ select 1 $$"}, NEGA),    # Furos fechados em 29/09 (função que grava, API do Supabase, scripts)
+    ("mcp__supabase__execute_sql", {"query": "set statement_timeout='60s'; delete from follow_ups where id = 1"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "set local role service_role; select 1"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "select set_config('role', 'service_role', true)"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "begin; insert into x values (1); commit;"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "create or replace function public.x() returns int language sql as $$ select 1 $$"}, LIVRE),    # Furos fechados em 29/09 (função que grava, API do Supabase, scripts)
     ("mcp__supabase__execute_sql", {"query": "select public.funcao_teste_que_grava(1)"}, PERGUNTA),
     ("mcp__supabase__execute_sql", {"query": "select public.funcao_teste_que_le(1)"}, LIVRE),
     ("mcp__supabase__execute_sql", {"query": "select count(*), now() from contatos"}, LIVRE),
@@ -109,16 +130,16 @@ CASOS = [
     ("mcp__supabase-espelho__reset_branch", {}, PERGUNTA),
     ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "create table t()"}, LIVRE),
     ("mcp__claude_ai_Supabase__execute_sql", {"project_id": "espelhoespelhoespelho", "query": "insert into x values (1)"}, LIVRE),
-    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "create table t()"}, PERGUNTA),
-    ("mcp__claude_ai_Supabase__execute_sql", {"project_id": "producaoproducaoprod", "query": "insert into x values (1)"}, NEGA),
-    ("mcp__supabase__execute_sql", {"query": "update contatos set nome = 'espelhoespelhoespelho'"}, NEGA),
-    ("mcp__supabase-espelho2__apply_migration", {"name": "x", "query": "create table t()"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "drop table t"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__execute_sql", {"project_id": "producaoproducaoprod", "query": "delete from x where a = 1"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "update contatos set nome = 'espelhoespelhoespelho'"}, PERGUNTA),
+    ("mcp__supabase-espelho2__apply_migration", {"name": "x", "query": "drop table t"}, PERGUNTA),
     ("Bash", {"command": "npx supabase db push --db-url postgresql://postgres.espelhoespelhoespelho:x@aws-0.pooler.supabase.com:5432/postgres"}, PERGUNTA),
     # Conector da conta que aparece com um código no lugar do nome: é banco do mesmo jeito
-    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"project_id": "producaoproducaoprod", "query": "update x set a = 1"}, NEGA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"project_id": "producaoproducaoprod", "query": "update x set a = 1"}, PERGUNTA),
     ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"project_id": "producaoproducaoprod", "query": "select 1"}, LIVRE),
-    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "create table t()"}, PERGUNTA),
-    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__deploy_edge_function", {"project_id": "producaoproducaoprod", "name": "aberta"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"project_id": "producaoproducaoprod", "name": "x", "query": "drop table t"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__deploy_edge_function", {"project_id": "producaoproducaoprod", "name": "aberta", "verify_jwt": False}, PERGUNTA),
     ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "drop table t"}, LIVRE),
     ("mcp__3e4cee0e-6ef0-45e7-8596-851789b32e6e__create_project", {"name": "site"}, LIVRE),
     ("mcp__3e4cee0e-6ef0-45e7-8596-851789b32e6e__pause_project", {}, LIVRE),
@@ -126,9 +147,10 @@ CASOS = [
 
 # Os mesmos pedidos num projeto SEM espelho registrado: tudo como produção.
 CASOS_SEM_ESPELHO = [
-    ("mcp__supabase-espelho__execute_sql", {"query": "delete from contatos"}, NEGA),
-    ("mcp__supabase-espelho__apply_migration", {"name": "x", "query": "create table t()"}, PERGUNTA),
-    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "create table t()"}, PERGUNTA),
+    ("mcp__supabase-espelho__execute_sql", {"query": "delete from contatos"}, PERGUNTA),
+    ("mcp__supabase-espelho__apply_migration", {"name": "x", "query": "drop table t"}, PERGUNTA),
+    ("mcp__claude_ai_Supabase__apply_migration", {"project_id": "espelhoespelhoespelho", "name": "x", "query": "drop table t"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111'"}, PERGUNTA),
 ]
 
 
@@ -141,7 +163,8 @@ def montar_pasta_teste():
     (PASTA_TESTE / ".claude").mkdir(exist_ok=True)
     (PASTA_TESTE / ".claude" / "konoha.json").write_text(
         '{"n8n_hosts": ["automacao.exemplo.com.br"], "publicar_funcao": "npm run publicar:funcao -- {nome}", '
-        '"banco_espelho": {"ref": "espelhoespelhoespelho", "mcp": "supabase-espelho"}}',
+        '"banco_espelho": {"ref": "espelhoespelhoespelho", "mcp": "supabase-espelho"}, '
+        '"empresa_teste": {"nome": "Empresa de teste", "id": "11111111-1111-1111-1111-111111111111"}}',
         encoding="utf-8",
     )
     (PASTA_TESTE / "supabase" / "config.toml").write_text(
@@ -192,7 +215,7 @@ def casos_de_traducao() -> int:
 
 
 def casos_de_publicacao() -> int:
-    """Publicar função: pergunta sempre, e diz em português o que importa (login, comando oficial)."""
+    """Publicar função: passa quando bate com o declarado; pergunta, em português, quando não bate."""
     falhas = 0
     exemplos = [
         ("npm run publicar:funcao -- aberta", "exige login: não", False),
@@ -204,8 +227,8 @@ def casos_de_publicacao() -> int:
     ]
     for comando, trecho, grave in exemplos:
         r = trava.decidir({"tool_name": "PowerShell", "tool_input": {"command": comando}, "cwd": str(PASTA_TESTE)})
-        texto = r[1] if r else ""
-        if not r or r[0] != "ask" or trecho not in texto or (("GRAVE" in texto) != grave):
+        texto = trava.traduzir.publicacao_funcao(comando, str(PASTA_TESTE), "npm run publicar:funcao -- {nome}") or ""
+        if (r is not None) != grave or (r and r[0] != "ask") or trecho not in texto or (("GRAVE" in texto) != grave):
             falhas += 1
             print(f"FALHOU publicação: {comando!r} -> {r}")
     print(f"{len(exemplos) - falhas}/{len(exemplos)} publicações certas")

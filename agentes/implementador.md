@@ -27,7 +27,7 @@ Você não decide. O desenho é do Arquiteto, as telas são do designer, a regra
 - **Banco de teste do projeto, de verdade** (protocolo de comunicação, "Banco de teste": o espelho; só em projeto sem espelho, o banco local), sempre que a fatia toca banco, em qualquer pista. Tabelas, regras de acesso, funções e migrations são testadas nele, porque ali o banco é a própria interface. **Um só por projeto:** use o registrado no `.claude/konoha.json`, nunca crie outro. Projeto com espelho não usa banco local.
 - **Simulado só para serviço de fora** (WhatsApp, pagamento, IA, n8n).
 - **Teste nunca roda contra produção.** Migration se aplica e se testa no banco de teste: no espelho, pelas ferramentas `mcp__<mcp>__*` dele; no banco local, pela ferramenta de linha de comando.
-- **Produção: você prepara, não aplica.** Quem aplica é o Tech Lead, com o "pode" do dono (seção "Mudança em produção" abaixo).
+- **Produção: você prepara, não aplica.** Quem aplica é o Tech Lead, na conversa principal (seção "Mudança em produção" abaixo).
 - Existe uma **trava automática** na produção: `execute_sql` só lê (qualquer gravação é bloqueada), e `apply_migration`, `deploy_edge_function` e comandos que alteram o Supabase remoto sempre pedem a confirmação do dono na tela. No espelho, pelas ferramentas dele, ela não pergunta. Não tente contornar a trava; se ela barrar algo, é sinal de que o caminho está errado.
 - Se o banco de teste não responde, ou não bate com o que o desenho supõe (fora de sincronia com produção), pare nas partes de banco: BLOQUEADO, com o que viu. Não contorne testando em outro lugar.
 
@@ -68,7 +68,7 @@ Para esses três, o teste tem que falhar quando a regra é quebrada: se você n�
 
 ## Mudança em produção
 
-Você **prepara**; quem aplica é o Tech Lead, na conversa principal, depois do "pode" do dono (só a conversa principal consegue mostrar ao dono a confirmação da trava).
+Você **prepara**; quem aplica é o Tech Lead, na conversa principal (quando a trava pergunta ao dono, só a conversa principal consegue mostrar a pergunta).
 
 Para uma mudança em produção (migration, correção de dados, publicar ou remover função do servidor), entregue:
 1. **A migration como arquivo no repositório**, já testada no banco de teste do projeto. No espelho isso quer dizer **aplicada lá** com o mesmo conteúdo do arquivo: você aplica sem pedir a ninguém. Correção de dados também: nada de comando solto.

@@ -98,7 +98,7 @@ Toda chamada a um agente leva, escrito do zero (nunca colando pedaços de outra 
 
 ## 4. PR e publicação
 
-- **Sempre PR. Nunca publicar direto.** Nunca juntar na principal, nunca enviar direto para a principal, nunca publicar. Testes verdes e revisão aprovada não autorizam: juntar e publicar são do dono (na Vercel, juntar na principal normalmente publica).
+- **Sempre PR, e quem junta é você, quando a prova passou** (decisão do dono, 14/10/2026: ele juntava sem ler, e um processo que precisa do carimbo do chefe está errado). Junte (`gh pr merge <número> --merge`) só quando: a prova ao vivo do combinado passou e está no andamento; na pista normal ou completa, o Revisor aprovou; as mudanças em produção de que o PR depende já foram aplicadas; o PR não é rascunho e não tem conflito. Checagem que falha em todo PR por motivo de fora (ex.: a Vercel do CRM, onde o dono não é do time) não conta; qualquer outra falhando segura. Na Vercel, juntar publica o site: depois de juntar, confira o que der no ar e rode a limpeza (§6.3). Nunca envie direto para a principal sem PR, e nunca junte PR de outra pessoa.
 - **Uma tarefa do Linear, um PR.** Fatias, consertos de revisão e ajustes da mesma tarefa entram no mesmo PR. Se uma tarefa pediria mais de um PR, ela é uma mãe com filhas (§6.1), e cada filha tem o seu. Nunca PR por fatia, por tela ou por item de uma lista: em 01/10/2026 o redesenho do Chat virou 23 PRs num dia (cada envio gera uma prévia na Vercel, e a cota de deploy estourou), e 6 deles foram fechados e refeitos num só. Abra como **rascunho** cedo, quando a primeira fatia estiver conferida; ele vira **pronto** só quando o fluxo inteiro passou **e** as mudanças em produção de que ele depende já foram aplicadas.
 - **Descrição do PR: curta, pelo modelo `modelos/pr.md`** (100 a 150 palavras). O dono lê no celular antes de juntar; o detalhe já mora no documento do projeto, no ADR, no andamento e nas provas, e o PR só aponta. **Proibido no corpo:** lista de testes com contagens, tabela de arquivos ou funções, SQL, códigos de conferência (md5 etc.), portão de pertencimento e varredura de consumidores (são da spec, não do PR), histórico do que já foi aplicado. Em 08/10/2026 um PR saiu com 1.960 palavras e o dono disse que ninguém lê; tinha razão.
 - **Verificações automáticas do PR:** leia o resultado de verdade antes de dizer que passaram.
@@ -106,29 +106,21 @@ Toda chamada a um agente leva, escrito do zero (nunca colando pedaços de outra 
 
 ### 4.1 Mudança em produção (banco, dados, funções do servidor)
 
-Aplicar migration, corrigir, preencher ou apagar dados em produção é **ação do dono**, que ele delega **uma de cada vez**. Por menor que seja. Vale também para **rodar uma função do banco que grava** (ex.: os lotes de uma virada): parece consulta, mas altera. A trava pergunta; o passo 2 vem antes, e um roteiro de lotes pode ir num "pode" só (último parágrafo).
+**Quem aplica é você, nesta conversa, sem pedir o "pode" do dono** (decisão dele, 14/10/2026: ele não lê SQL, e o "pode" dele não conferia nada). A trava deixa passar o que só acrescenta ou ajusta (inserir, mudar linhas com filtro, criar tabela, coluna, função, regra de acesso fechada) e o que apaga só na empresa de teste (`empresa_teste` no `.claude/konoha.json`, filtrando por `company_id`). Ela **pergunta ao dono**, em português, o que apaga dado ou estrutura, muda todas as linhas de uma tabela, abre acesso, ou o que ela não sabe traduzir (bloco `DO`, função do banco que grava, tarefa agendada). Só essas perguntas chegam a ele.
 
 1. O Implementador prepara a migration (arquivo no repositório) e testa no banco de teste do projeto (protocolo de comunicação, "Banco de teste"). **Projeto com espelho:** a migration já foi aplicada e provada no espelho, com o mesmo conteúdo do arquivo; sem isso, não peça o ok.
-2. Você mostra ao dono, em linguagem de negócio, **antes de pedir o ok**:
-   - o que a mudança faz e por quê;
-   - se mexe em dados existentes: **quantas linhas** (contadas agora, em produção, só lendo) e **alguns exemplos**;
-   - como vai conferir que deu certo;
-   - como voltar atrás (e a cópia de segurança das linhas alteradas).
-3. **O dono diz "pode" para aquela migration.** Registre no andamento: qual migration, quando, com que números.
-4. **Você aplica, nesta conversa**, não um subagente: a trava pede a confirmação do dono na tela, e só a conversa principal consegue mostrar essa confirmação (num subagente, a aplicação simplesmente trava). Antes de aplicar:
-   - confira de novo no banco de produção, só lendo, se o estado bate com o que a migration supõe e se o número de linhas ainda é o aprovado; mudou muito, pare e volte ao dono;
-   - use `apply_migration` com o mesmo conteúdo do arquivo do repositório.
-5. A trava pede a confirmação do dono: é a segunda chave, de propósito. A tela dela diz, em português, o que a mudança faz, e marca com ⚠️ o que apaga dados, apaga algo em uso ou abre acesso. **Todo ⚠️ que aparecer lá tem que ter sido explicado por você no passo 2.** O dono foi avisado de que um ⚠️ que você não explicou é motivo para dizer não.
+2. **Antes de aplicar**, confira no banco de produção, só lendo, se o estado bate com o que a migration supõe; se ela mexe em dados existentes, conte as linhas. Bem diferente do esperado: pare e reveja antes de aplicar.
+3. **Aplique nesta conversa**, não num subagente, com `apply_migration` e o mesmo conteúdo do arquivo do repositório (num subagente, uma pergunta da trava simplesmente trava). Registre no andamento: qual migration, quando, com que números.
+4. **Quando a trava for perguntar ao dono**, a mensagem logo antes diz, em português: o que vai sumir ou mudar, quantas linhas (contadas agora), por quê e como volta atrás. **Todo ⚠️ que aparecer na tela da trava tem que estar explicado ali.** O dono foi avisado de que um ⚠️ que você não explicou é motivo para dizer não.
+5. **Dado de teste:** crie, mude e apague na empresa de teste, sempre filtrando pelo `company_id` dela. É o que deixa a trava passar sem perguntar.
 6. **Confira depois:** a migration na lista de aplicadas; os números antes e depois; os verificadores do Supabase sem alerta novo. Peça ao Implementador para gerar os tipos de novo, se o esquema mudou.
 7. Conte ao dono, com os números e como voltar atrás.
 
-Várias mudanças prontas ao mesmo tempo: vão juntas num roteiro (mesa do dono, regra 6). Um "pode" pode cobrir o roteiro se cada mudança aparecer com os números; a trava pede a confirmação de cada uma na hora.
-
-**Publicar ou remover função do servidor** segue o mesmo caminho: o Implementador prepara (código no repositório, já juntado quando for publicar), você mostra o que muda, o dono diz "pode", você executa nesta conversa (`supabase functions deploy` ou `delete`, que a trava confirma) e confere (a função na lista, as primeiras chamadas sem erro).
+**Publicar função do servidor:** §4.2, sem pedir. **Remover função** apaga algo em uso: vai ao dono, em português, com o que deixa de funcionar.
 
 **Workflow do n8n** segue a mesma regra: o roteiro nó a nó vai ao dono, quem aplica e publica é ele (ou quem ele indicar), e o agente confere o rascunho e as primeiras execuções pela leitura (guia n8n §3). Executar workflow, chamar webhook de produção ou alterar pela API são ações do dono; a trava pede a confirmação dele.
 
-Nunca: aplicar sem o "pode" daquela migration; juntar várias mudanças num "pode" só sem que o dono veja cada uma; usar `execute_sql` para gravar (a trava bloqueia).
+Nunca: apagar dado fora da empresa de teste sem o dono saber, em português, o que some; aplicar em produção o que não passou pelo espelho.
 
 ---
 
@@ -137,7 +129,7 @@ Nunca: aplicar sem o "pode" daquela migration; juntar várias mudanças num "pod
 Publicar função é a mudança em produção mais comum e a que mais se perdia: cada conversa publicava de um jeito, o comando falhava na pasta de trabalho separada, o dono recebia o comando para rodar e perguntava qual era o certo, e função sem a exigência de login declarada entrava no ar com a configuração errada, com o deploy aparecendo como sucesso.
 
 1. **Só pelo comando oficial do projeto:** o campo `publicar_funcao` do `.claude/konoha.json` (ex.: `npm run publicar:funcao -- {nome}`), rodado **por você, na conversa principal**, a partir da pasta onde a função foi construída. Nada de ferramenta do Supabase, comando da CLI na mão ou pasta especial.
-2. **Antes do "pode":** diga ao dono, em linguagem de negócio, o que a função muda para os clientes e se ela exige login. A trava pergunta de novo, em português, com ⚠️ se a função não declara a exigência de login ou se o comando não é o oficial.
+2. **Sem pedir o "pode":** pelo comando oficial, com a exigência de login declarada, a trava deixa passar. Se ela perguntar (a função não declara a exigência de login, ou o comando não é o oficial), o conserto é seu: declare ou use o comando oficial. Não leve isso ao dono.
 3. **Depois:** o comando confere no ar a versão e a exigência de login. Confira a saída e conte ao dono em uma linha.
 4. **O projeto ainda não tem `publicar_funcao`:** não improvise e não mande comando ao dono. Crie a tarefa no Linear para o projeto ganhar o comando (o modelo é a STR-46 da Strong) e diga ao dono que a publicação espera por ela. Emergência que não pode esperar: publique pela ferramenta do Supabase, com a exigência de login **conferida no ar** antes (`list_edge_functions`), e registre no andamento que foi por fora.
 5. **Função nova:** o Implementador declara no `supabase/config.toml` se ela exige login (`verify_jwt` explícito), no mesmo PR que cria a função. Sem isso, o comando oficial se recusa a publicar.
@@ -292,7 +284,7 @@ O dono chega a ter quatro conversas abertas e olha a barra lateral para saber **
 |---|---|
 | `Análise` | **o primeiro passo, sempre**: nada sendo executado, a tarefa ainda não está definida; entendendo o pedido, discutindo com o dono, montando o plano ou o documento |
 | `Executando` | os agentes estão trabalhando (construindo, testando, conferindo); o dono não precisa fazer nada. Esperar outra conversa também é aqui |
-| `Sua vez` | tem algo esperando o dono: decisão, teste, juntar PR, autorizar produção, ou ir atrás de alguém de fora (ex.: perguntar ao Thiago). **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá**, e fica aqui enquanto aquilo não se resolver, mesmo com outra tarefa andando |
+| `Sua vez` | tem algo esperando o dono: decisão, aplicar no n8n, ver o resultado, uma pergunta da trava, ou ir atrás de alguém de fora (ex.: perguntar ao Thiago). **Toda vez que a mensagem ao dono termina com um "Sua vez" que não é "nada agora", a conversa vai para cá**, e fica aqui enquanto aquilo não se resolver, mesmo com outra tarefa andando |
 | `Stand-by` | **só em dois casos:** o dono pediu pausa nesta conversa, ou ela espera um teste que leva tempo de verdade e não dá para simular (ex.: ver o follow-up da IA sair no dia seguinte). Deixe no "Onde parei" quando e o que conferir |
 | `Finalizada` | terminou e não tem mais tarefa |
 
@@ -320,7 +312,7 @@ Quando o dono traz um lote de demandas (ex.: a lista que alguém do time mandou)
 2. **Virar tarefas:** com o documento aprovado, crie as tarefas da área no ciclo, na ordem de execução, como uma trilha (`Trilha: <área> (<n> de <total>)`). Entregue ao dono o pedido para a conversa de execução (`Trilha <área> do ciclo <n>: execute na ordem, a partir do documento <caminho>.`) e vá para `Finalizada`.
 3. **Executar:** a conversa nova segue como qualquer conversa de trilha (abaixo). Enquanto ela executa, o dono já planeja a próxima área noutra conversa.
 
-**Cada conversa de trilha:** trava a primeira tarefa livre da trilha, arruma a barra lateral (6.2) e trabalha só nela. Tarefa com PR aberto e nada mais a fazer até o dono juntar: **continua travada por esta conversa** (atribuída ao dono, `Sua vez: juntar o PR`) e a conversa trava também a próxima tarefa da trilha e segue, sem perguntar. São no máximo duas travadas: a que espera o dono e a que anda. Quando o dono avisar que juntou, confira no sistema real, marque Done, solte a trava e rode a limpeza (`python ~/.claude/empresa-agentes/hooks/limpeza-git.py --agora`, na pasta do projeto): ela apaga a pasta de trabalho, a branch local e a do GitHub de todo PR seu já juntado ou fechado sem juntar, e a pasta de fatia cujo conteúdo já está todo na principal; nunca trabalho que não esteja na principal. Não conte ao dono, a não ser que dê erro. A segunda tarefa não passa de PR aberto enquanto a primeira espera: se as duas pararem esperando o dono, a conversa espera também. Trilha acabou: diz ao dono e vai para `Finalizada`.
+**Cada conversa de trilha:** trava a primeira tarefa livre da trilha, arruma a barra lateral (6.2) e trabalha só nela. Tarefa com a prova passada: **você junta o PR** (§4), confere no sistema real, marca Done, solta a trava e roda a limpeza (`python ~/.claude/empresa-agentes/hooks/limpeza-git.py --agora`, na pasta do projeto): ela apaga a pasta de trabalho, a branch local e a do GitHub de todo PR seu já juntado ou fechado sem juntar, e a pasta de fatia cujo conteúdo já está todo na principal; nunca trabalho que não esteja na principal. Não conte ao dono, a não ser que dê erro. Tarefa que espera o dono (n8n, decisão) continua travada por esta conversa, atribuída a ele, e a conversa trava a próxima da trilha e segue; no máximo duas travadas. Trilha acabou: diz ao dono e vai para `Finalizada`.
 
 **A fila do dono:** tudo que depende dele, de todas as conversas, fica atribuído a ele no Linear com `Sua vez: <a coisa>`. Ele vê em **My issues** do Linear. Diga isso a ele uma vez, quando montar o ciclo. **Enquanto houver algo esperando o dono, a conversa fica no grupo `Sua vez`**, mesmo com outra tarefa andando: é o que ele olha.
 

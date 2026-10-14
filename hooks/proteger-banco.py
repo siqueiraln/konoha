@@ -1,11 +1,18 @@
-"""Trava do banco e do n8n: leitura livre, qualquer alteração só com autorização do dono.
+"""Trava do banco e do n8n: leitura livre; na produção, só o que apaga pergunta.
 
 Gancho PreToolUse do Claude Code. Recebe a chamada de ferramenta em JSON pela
 entrada padrão e responde:
-- execute_sql que grava: NEGA (a alteração tem que ir por apply_migration);
-  ajustes de sessão que não gravam (tempo limite, simular usuário comum) passam;
-- apply_migration, deploy_edge_function e outras ferramentas do Supabase que
-  alteram algo: PERGUNTA ao dono, sempre, mesmo em modo automático;
+- produção, execute_sql e apply_migration: PASSA o que só acrescenta ou ajusta
+  (inserir, mudar linhas com filtro, criar tabela, coluna, função, regra de
+  acesso fechada) e o que apaga só dentro da empresa de teste (campo
+  empresa_teste do `.claude/konoha.json`). PERGUNTA, em português, o que apaga
+  dado ou estrutura, muda todas as linhas, abre acesso, ou a trava não sabe
+  traduzir (bloco DO, select que grava). Decisão do dono em 14/10/2026: ele não
+  lê SQL, então o "pode" dele só vale onde ele consegue julgar ("apaga isto");
+- deploy_edge_function e publicar pelo comando oficial: PASSA se a função exige
+  login como o projeto declara; PERGUNTA se não;
+- outras ferramentas do Supabase que alteram algo (branches, pausar, restaurar):
+  PERGUNTA;
 - terminal: comando que altera o Supabase remoto, ou psql fora do banco local:
   PERGUNTA; psql no banco local (Docker, localhost) passa;
 - MCP do n8n: ferramentas de leitura passam; qualquer outra (executar, publicar,
@@ -210,6 +217,74 @@ def sql_grava(sql: str) -> bool:
     return any(re.search(padrao, limpo) for padrao in ESCRITA_SQL)
 
 
+def comandos(sql: str):
+    """Quebra o SQL nos comandos, por ";" fora de textos e de corpos $$. Tira comentários fora de textos."""
+    partes, atual, i, n = [], "", 0, len(sql or "")
+    while i < n:
+        c = sql[i]
+        if c == "'":
+            j = i + 1
+            while j < n and not (sql[j] == "'" and sql[j + 1:j + 2] != "'"):
+                j += 2 if sql[j] == "'" else 1
+            atual += sql[i:j + 1]
+            i = j + 1
+        elif m := re.match(r"\$(\w*)\$", sql[i:]):
+            fim = sql.find(m.group(0), i + len(m.group(0)))
+            fim = n if fim < 0 else fim + len(m.group(0))
+            atual += sql[i:fim]
+            i = fim
+        elif sql.startswith("--", i):
+            fim = sql.find("\n", i)
+            i = n if fim < 0 else fim
+        elif sql.startswith("/*", i):
+            fim = sql.find("*/", i + 2)
+            i = n if fim < 0 else fim + 2
+        elif c == ";":
+            partes.append(atual)
+            atual, i = "", i + 1
+        else:
+            atual += c
+            i += 1
+    partes.append(atual)
+    return [p.strip() for p in partes if p.strip()]
+
+
+def so_empresa_teste(bruto: str, limpo: str, empresa: str) -> bool:
+    """Apagar ou mudar linhas filtrando só pela empresa de teste, sem "or" que alargue o filtro."""
+    if not re.match(r"(delete|update)\b", limpo) or " or " in f" {limpo} ":
+        return False
+    return bool(re.search(r"\bcompany_id\s*=\s*'" + re.escape(empresa.lower()) + "'", bruto.lower()))
+
+
+def mudanca_comum(sql: str, cwd: str) -> bool:
+    """Só acrescenta ou ajusta, ou só apaga na empresa de teste? Então não precisa do dono."""
+    empresa = (projeto.config(cwd).get("empresa_teste") or {}).get("id") or ""
+    algum = False
+    for bruto in comandos(sql):
+        sessao = bruto
+        for padrao in AJUSTES_SEM_ESCRITA:
+            sessao = re.sub(padrao, " ", sessao, flags=re.IGNORECASE)
+        limpo = traduzir._limpar(sessao)
+        if not limpo:
+            continue
+        if re.match(r"(set|reset|do|call|copy|lock|execute|prepare|security label)\b", limpo):
+            return False
+        if re.match(r"(select|with|values|table|explain)\b", limpo):
+            if sql_grava(bruto) or traduzir.funcoes_chamadas_que_gravam(bruto, cwd):
+                return False
+            continue
+        linha = traduzir._comando(limpo)
+        if linha is None:
+            continue
+        for texto in linha if isinstance(linha, list) else [linha]:
+            if "não traduz" in texto or "tarefa automática" in texto:
+                return False
+            if texto.startswith("⚠️") and not (empresa and so_empresa_teste(bruto, limpo, empresa)):
+                return False
+        algum = True
+    return algum
+
+
 # ---------------------------------------------------------------- decisão
 
 def decidir(chamada: dict):
@@ -224,12 +299,9 @@ def decidir(chamada: dict):
             return None
         if ferramenta.endswith("__execute_sql"):
             if sql_grava(entrada.get("query", "")):
-                return (
-                    "deny",
-                    "Trava do banco: o execute_sql só pode LER. Esta consulta altera o banco. "
-                    "Para alterar, escreva uma migration e use apply_migration, que pede a "
-                    "autorização do dono antes de rodar.",
-                )
+                if mudanca_comum(entrada.get("query", ""), cwd):
+                    return None
+                return ("ask", traduzir.resumo_migration(entrada.get("query", ""))[0])
             funcoes = traduzir.funcoes_chamadas_que_gravam(entrada.get("query", ""), cwd)
             if funcoes:
                 return (
@@ -240,9 +312,12 @@ def decidir(chamada: dict):
                 )
             return None
         if ferramenta.endswith("__apply_migration"):
+            if mudanca_comum(entrada.get("query", ""), cwd):
+                return None
             return ("ask", traduzir.resumo_migration(entrada.get("query", ""), entrada.get("name", ""))[0])
         if ferramenta.endswith("__deploy_edge_function"):
-            return ("ask", traduzir.resumo_funcao(entrada)[0])
+            texto, grave = traduzir.resumo_funcao(entrada)
+            return ("ask", texto) if grave else None
         if FERRAMENTAS_SUPABASE_QUE_ALTERAM.search(ferramenta):
             acao = ferramenta.rsplit("__", 1)[-1]
             onde = "no projeto ESPELHO (não é produção)" if no_espelho else "no Supabase de PRODUÇÃO"
@@ -270,7 +345,7 @@ def decidir(chamada: dict):
         oficial = projeto.config(cwd).get("publicar_funcao") or ""
         for trecho in trechos(comando):
             pergunta = traduzir.publicacao_funcao(trecho, cwd, oficial)
-            if pergunta:
+            if pergunta and "GRAVE" in pergunta:
                 return ("ask", pergunta)
         if terminal_supabase_altera(comando):
             return (

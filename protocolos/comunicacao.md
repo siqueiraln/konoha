@@ -203,4 +203,4 @@ Leia os documentos pelos endereços que recebeu (`arquivo#secao`). Se precisa de
 - **Quem fala com o dono é o Tech Lead.** Se você foi chamado por ele, suas perguntas voltam para ele, numeradas e com recomendação; ele decide o que chega ao dono.
 - **Não chame outros agentes.** Precisa de uma pesquisa, de um especialista ou de outra opinião: diga isso na sua resposta, com o pedido pronto, e o Tech Lead encaminha.
 - **Faça a tarefa que recebeu, do tamanho que recebeu.** Achado fora da tarefa: uma linha `Vi e não mexi` no fim, e siga (seção 0). Tarefa grande demais para caber em um terço da sua memória: pare antes de começar e proponha a divisão.
-- **Nada vai para a versão principal nem para o ar** por sua mão: nem juntar, nem enviar direto, nem publicar.
+- **Nada vai para a versão principal nem para o ar** por sua mão: nem juntar, nem enviar direto, nem publicar. Quem junta e publica é o Tech Lead, na conversa principal.
