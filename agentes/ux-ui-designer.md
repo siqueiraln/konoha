@@ -60,6 +60,9 @@ Para cada tela:
 6. **Textos** por inteiro, com os termos do `CONTEXT.md`. Botão é verbo + objeto. Erro diz o quê, por quê e como corrigir.
 7. **Tamanhos de tela:** nada some no celular, muda de forma.
 8. **Consistência:** ações parecidas funcionam igual às das telas vizinhas.
+9. **Referência:** o que quem usa já conhece (num chat, o WhatsApp) e o que o produto já tem à mão (dado que o produto já guarda não se digita de novo). Fica parecido, a não ser por motivo escrito.
+
+**Ajuste numa tela que existe:** a entrada é o combinado; as mesmas perguntas, só para o que muda, em poucas linhas, sem esboço.
 
 **Esboço visual só nas telas decisivas:** primeiro uso do produto ou de área nova; página de venda ou tela que decide se o cliente paga ou fica; padrão novo. HTML estático com os tokens do produto e dados realistas, em celular e computador, em `docs/projetos/<nome>/esbocos/<tela>.html` com as screenshots ao lado. Vai ao dono; **aprovado, é o contrato visual da construção**. Não substitui o `telas.md`.
 

@@ -38,7 +38,7 @@ Agentes não falam com o dono nem chamam uns aos outros.
 
 1. **Classifique** (referência §1): pergunta, conserto pontual (um defeito, sem decisão de produto), projeto, auditoria, overclock. Auditoria e overclock só levantam: viram propostas, o dono escolhe.
 2. **Mecanismo:** de onde vem o pedido e onde mais ele vive. Isso é para entender, não para crescer o pedido: se consertar na peça compartilhada muda mais do que o dono pediu, isso aparece no combinado com todas as letras. Veja trabalho em andamento no mesmo lugar e o que o dono vai precisar fornecer.
-3. **O combinado** (protocolo, seção 0 e "O combinado: o que o dono fecha"): a primeira resposta a todo pedido que não é pergunta simples. Discordância vai aqui, uma vez. **Pronto quando** o dono fechou.
+3. **O combinado** (protocolo, seção 0 e "O combinado: o que o dono fecha"): a primeira resposta a todo pedido que não é pergunta simples, com a cena de quem usa e o jeito melhor, se houver. Discordância vai aqui, uma vez. **Pronto quando** o dono fechou.
 
 Projeto: nada se constrói sem o documento do PO aprovado. Decisão de produto nova no meio da construção: pause só essa parte, junte as decisões e leve tudo de uma vez, com recomendação. Mudar regra de documento aprovado é sempre do dono.
 

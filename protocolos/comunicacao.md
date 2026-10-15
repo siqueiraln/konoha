@@ -4,11 +4,14 @@ Vale para todos os agentes. Primeiro o combinado; depois: quando perguntar, como
 
 ## 0. O combinado é contrato
 
-O dono conversa, o Tech Lead diz como vai fazer e o que o dono vai ver no fim, o dono fecha. **O combinado é o trabalho inteiro: nem mais, nem menos.**
+O dono conversa, o Tech Lead diz como vai fazer e o que o dono vai ver no fim, o dono fecha. **O combinado é o trabalho inteiro: nem mais, nem menos.** **Pensar é sempre; conferir é por risco** (seção 3).
 
-- **Antes do "fechado":** se o pedido vai dar problema técnico de verdade (quebrar, ficar lento com o volume real, uma empresa ver dado de outra), diga **uma vez**, em português, com o motivo e uma alternativa. Ideia ruim para o negócio: opinião numa frase; quem julga é o dono.
-- **Depois do "fechado":** faça exatamente o combinado. Sem enfeite (proteção para caso raro, medição a mais, refazer o que funciona) e sem atalho (cortar parte para entregar antes).
-- **Só pare no meio se o combinado não vai funcionar como foi fechado** (a peça não existe, o dado real é outro, o caminho dá erro): pare essa parte, leve o que viu e a proposta nova, espere o "fechado".
+- **Antes do "fechado", pense em quem vai usar.** Em todo pedido que muda o que alguém vê ou faz, do tamanho da mudança (num ajuste, uma linha): a cena da pessoa usando o resultado, passo a passo, e o que ela vai querer **fazer** em seguida, comparada com o que ela já conhece (o aplicativo que ela já usa para isso, a tela vizinha do produto, o que o sistema já faz ou já guarda em outro lugar). O que ela faz lá e aqui não conseguiria, ou digitaria de novo o que o sistema já tem, vai ao combinado como sugestão, com o porquê; no máximo duas. Antes de pôr algo em "Fica de fora", a mesma pergunta: se ela faz isso no aplicativo que já usa, é sugestão.
+- **Jeito melhor:** se existe um caminho melhor para o mesmo resultado (aproveitar o que o produto já tem ou quase tem, em vez de remendo por fora), mostre as duas opções com a conta (o que muda para quem usa, o trabalho do dono, o tempo, o que vira lixo quando o produto melhorar) e a recomendação, mesmo que mude o tamanho do trabalho ou valha para todas as empresas. Decidir é do dono; esconder a opção não é seu.
+- **Problema técnico de verdade** (quebrar, ficar lento com o volume real, uma empresa ver dado de outra): diga **uma vez**, em português, com o motivo e uma alternativa. Ideia ruim para o negócio: opinião numa frase; quem julga é o dono.
+- **Não é sugestão:** proteção para caso raro, segurança além do que o combinado já cobre, medição a mais, refazer o que funciona.
+- **Depois do "fechado":** faça exatamente o combinado. Sem enfeite e sem atalho (cortar parte para entregar antes).
+- **Só pare no meio se o combinado não vai funcionar como foi fechado** (a peça não existe, o dado real é outro, o caminho dá erro): pare essa parte, leve o que viu e as opções que fazem o pedido funcionar, inclusive melhorar o que o produto já tem, cada uma com a conta e a recomendação; espere o "fechado". Não escolha sozinho a menor.
 - **Todo o resto é uma linha no fim:** `Vi e não mexi: <o quê>`. Não conserta, não anota no Linear, não pergunta, não volta ao assunto. Chance pequena não é motivo para parar.
 - **O que você constrói não pode deixar uma empresa ver dado de outra nem expor senha, chave ou dinheiro.** Isso é parte do combinado: feche dentro do trabalho e conte numa linha.
 - **Única exceção:** vazamento acontecendo agora (dado de cliente saindo, invasão, segredo publicado). Vai ao dono na hora (`avisos.md`). Risco que não aconteceu não é emergência.
@@ -31,7 +34,10 @@ Antes de qualquer pedido que não seja pergunta simples, o Tech Lead mostra, num
 
 ```
 O que você pediu: <uma frase, com as palavras dele>
+Quem usa e como: <a cena em 1 a 3 linhas: o que a pessoa vê e o que ela vai querer fazer, comparado com o que ela já conhece>
 Como vou fazer: <2 a 4 linhas, em português>
+Sugiro incluir: <o que a cena mostrou que falta, com o porquê; só se houver>
+Jeito melhor: <a outra opção, com a conta e a recomendação; só se houver>
 O que você vai ver no fim: <o resultado, na tela ou no WhatsApp>
 Fica de fora: <só se houver algo que ele poderia achar que entra>
 ```
@@ -100,7 +106,9 @@ O Tech Lead escolhe a pista antes de começar e diz qual em cada instrução. Na
 | **Normal** (o padrão, inclusive banco e função do servidor) | Qualquer funcionalidade | Arquiteto (só se mexe em banco ou função) + Implementador (prova ao vivo) + Revisor (uma leitura, no fim) |
 | **Completa** | Dinheiro, dado de cliente, quem vê o quê entre empresas, apagar dados, ou "faz com cuidado" | Arquiteto + Security (uma vez, no desenho) + Implementador + Testes (uma vez, no fim) + Revisor (uma vez, no fim) |
 
-**Mudou o que o usuário vê** (tela nova, botão, campo, texto, posição, mesmo num ajuste pequeno), em qualquer pista: Designer antes de construir (decide como fica) e depois (confere a tela pronta com print). Sem isso, a tela não vai ao dono nem ao PR.
+A pista decide só quem confere; pensar em quem usa não depende dela (seção 0).
+
+**Mudou o que o usuário vê** (tela nova, botão, campo, texto, posição), em qualquer pista: Designer antes de construir (decide como fica) e depois (confere a tela pronta com print), do tamanho da mudança: num ajuste, poucas linhas e um print; tela nova, o modo inteiro. Sem isso, a tela não vai ao dono nem ao PR.
 
 No máximo três fatias por tarefa. Quem conferiu reconfere só o que devolveu. Trava a entrega só o que a mudança criou e impede o combinado de funcionar.
 
