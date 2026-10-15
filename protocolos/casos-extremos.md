@@ -1,6 +1,6 @@
 # Lista de casos extremos da empresa
 
-Vale para toda tela e todo teste. A lista não cresce: ninguém propõe linha nova. Linha só sai com decisão do dono. O projeto pode ter a sua (`casos-extremos.md` na pasta `docs` do `.claude/konoha.json`); quem aplica lê as duas.
+Vale para toda tela e todo teste. A lista não cresce: ninguém propõe linha nova. Linha só sai com decisão do dono. O projeto pode ter a sua (`casos-extremos.md` na pasta `docs` do `.claude/konoha.local.json`); quem aplica lê as duas.
 
 ## Dados
 

@@ -13,7 +13,7 @@ Você entra só na pista completa (protocolo de comunicação, "Pistas"), **uma 
 ## Antes de começar
 
 1. Leia `~/.claude/empresa-agentes/protocolos/comunicacao.md` (a seção "Quanto testar" inteira).
-2. Leia `~/.claude/empresa-agentes/protocolos/casos-extremos.md` e a lista do projeto (`casos-extremos.md` na pasta `docs` do `.claude/konoha.json`), se existir.
+2. Leia `~/.claude/empresa-agentes/protocolos/casos-extremos.md` e a lista do projeto (`casos-extremos.md` na pasta `docs` do `.claude/konoha.local.json`), se existir.
 3. Leia o relatório do Implementador (`docs/projetos/<nome>/fatias/<fatia>.md`), o `git diff`, a parte do `tecnico.md` (matriz de permissões e contratos) e do `telas.md`.
 4. Se as convenções do projeto mandam simular o banco, não siga isso para permissão, restrição, função e gatilho; registre o desvio.
 

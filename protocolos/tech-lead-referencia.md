@@ -51,13 +51,13 @@ Tamanho: cabe em cerca de 1/3 da memória do agente; passou, divida.
 
 - **Uma tarefa do Linear, um PR**, aberto uma vez, já pronto: fluxo inteiro provado e produção de que ele depende já aplicada. Tarefa que pediria vários PRs é uma mãe com filhas (§6.1). Nunca PR por fatia.
 - **A branch vai ao GitHub uma vez**, com o PR pronto: cada envio gasta a cota de deploys da hospedagem.
-- **Nada de PR depois do PR:** documento vai no mesmo PR, escrito como se já estivesse no ar; situação (no ar, esperando) mora no Linear. Ajustes de configuração da conversa (`konoha.json`, `CLAUDE.md`, `vercel.json`) num PR só, no fim. Já abriu outro hoje para a mesma tarefa? O planejamento falhou: conte numa linha.
+- **Nada de PR depois do PR:** documento vai no mesmo PR, escrito como se já estivesse no ar; situação (no ar, esperando) mora no Linear. Ajustes de configuração da conversa (`konoha.local.json`, `CLAUDE.md`, `vercel.json`) num PR só, no fim. Já abriu outro hoje para a mesma tarefa? O planejamento falhou: conte numa linha.
 - **Descrição pelo `modelos/pr.md`** (100 a 150 palavras). Proibido: lista de testes, tabela de arquivos, SQL, códigos de conferência, histórico.
-- **Juntar:** você, com `gh pr merge <n> --merge`, quando a prova passou, o Revisor aprovou (pista normal ou completa), a produção necessária foi aplicada e não há conflito. **Antes, veja no `CLAUDE.md` do projeto quem pode juntar o quê** (hospedagem grátis pode só publicar o que o dono da conta junta). Checagem que falha em todo PR por motivo de fora não conta; outra falhando segura. Nunca diga que está no ar sem ver o deploy com sucesso. Nunca junte PR de outra pessoa nem envie direto para a principal. Depois, rode a limpeza (§6.3).
+- **Juntar:** você, com `gh pr merge <n> --merge`, quando a prova passou, o Revisor aprovou (pista normal ou completa), a produção necessária foi aplicada e não há conflito. **Antes, veja nas instruções do projeto (`CLAUDE.md` e `CLAUDE.local.md`) quem pode juntar o quê** (hospedagem grátis pode só publicar o que o dono da conta junta). Checagem que falha em todo PR por motivo de fora não conta; outra falhando segura. Nunca diga que está no ar sem ver o deploy com sucesso. Nunca junte PR de outra pessoa nem envie direto para a principal. Depois, rode a limpeza (§6.3).
 
 ### 4.1 Mudança em produção (banco, dados, funções)
 
-**Você aplica, nesta conversa, sem pedir o "pode".** A trava deixa passar o que só acrescenta ou ajusta e o que apaga só na empresa de teste (`empresa_teste` no `konoha.json`, filtrando por `company_id`). Ela pergunta ao dono, em português, o que apaga dado ou estrutura, muda todas as linhas, abre acesso ou ela não traduz (bloco `DO`, função que grava, tarefa agendada).
+**Você aplica, nesta conversa, sem pedir o "pode".** A trava deixa passar o que só acrescenta ou ajusta e o que apaga só na empresa de teste (`empresa_teste` no `konoha.local.json`, filtrando por `company_id`). Ela pergunta ao dono, em português, o que apaga dado ou estrutura, muda todas as linhas, abre acesso ou ela não traduz (bloco `DO`, função que grava, tarefa agendada).
 
 1. A migration está no repositório e já foi aplicada e provada no espelho, com o mesmo conteúdo.
 2. Antes, confira a produção só lendo: o estado bate com o que a migration supõe? Mexe em dado existente: conte as linhas. Muito diferente: pare.
@@ -68,7 +68,7 @@ Tamanho: cabe em cerca de 1/3 da memória do agente; passou, divida.
 Remover função apaga algo em uso: vai ao dono. **n8n:** roteiro nó a nó ao dono, que aplica; você confere pela leitura (guia n8n). Nunca aplique em produção o que não passou pelo espelho.
 
 ### 4.2 Publicar função do servidor
-1. Só pelo comando oficial (`publicar_funcao` no `konoha.json`), por você, na conversa principal, da pasta onde a função foi construída.
+1. Só pelo comando oficial (`publicar_funcao` no `konoha.local.json`), por você, na conversa principal, da pasta onde a função foi construída.
 2. Com a exigência de login declarada, a trava deixa passar. Se perguntar, o conserto é seu (declare ou use o comando oficial), não do dono.
 3. Confira a saída (versão e login no ar) e conte numa linha.
 4. Sem `publicar_funcao` no projeto: crie a tarefa para ganhar o comando e diga que a publicação espera. Emergência: ferramenta do Supabase, com o login conferido no ar antes, registrado no andamento.
@@ -104,7 +104,7 @@ Atualize a cada lançamento, entrega e decisão. Ao retomar, leia "Agora" e o fi
 
 ### 6.1 O quadro do dono (Linear)
 
-**Só você escreve no quadro.** Time: `linear_time` do `konoha.json`. **O pedido é a unidade do dono:** cada pedido do sócio ou de cliente é uma **tarefa-mãe** no projeto do Linear certo; tudo o que nasce dele é **filha**, nunca irmã. A mãe fecha só quando o pedido inteiro funciona.
+**Só você escreve no quadro.** Time: `linear_time` do `konoha.local.json`. **O pedido é a unidade do dono:** cada pedido do sócio ou de cliente é uma **tarefa-mãe** no projeto do Linear certo; tudo o que nasce dele é **filha**, nunca irmã. A mãe fecha só quando o pedido inteiro funciona.
 
 **A tarefa:**
 - **Título:** a frase que o dono mandaria no WhatsApp: `<Área do produto>: <o que muda para quem usa>`. Sem nome de agente, apelido interno, arquivo ou tabela.
@@ -201,4 +201,4 @@ Todos usam o modelo da conversa (`inherit`). Trocar por um mais barato (Docs, tr
 
 ## 9. Lições
 
-Fato do projeto que o dono repetiu: uma linha no `CLAUDE.md` do projeto, no PR da tarefa. Regra que faltou num agente ou guia da empresa: proponha ao dono, com o caso; não altere sem o ok dele.
+Fato que o dono repetiu: se serve a qualquer um que mexe no projeto, uma linha no `CLAUDE.md` (no PR da tarefa); se é do nosso jeito de trabalhar, no `CLAUDE.local.md` da pasta do projeto (fora do git). Regra que faltou num agente ou guia da empresa: proponha ao dono, com o caso; não altere sem o ok dele.

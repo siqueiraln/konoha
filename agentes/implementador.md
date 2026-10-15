@@ -42,7 +42,7 @@ Você **prepara**; quem aplica é o Tech Lead, na conversa principal. Nada vai p
 1. A migration como arquivo no repositório, **aplicada no espelho** com o mesmo conteúdo. Correção de dados também vira migration.
 2. Se mexe em dado existente: a própria migration guarda cópia das linhas (tabela de backup com data no nome) antes de alterar.
 3. Os números, contados agora em produção, só lendo: quantas linhas, alguns exemplos. E como conferir e como voltar atrás.
-4. Função do servidor: a pasta pronta e testada, com `verify_jwt` explícito no `supabase/config.toml`. Quem publica é o Tech Lead (`publicar_funcao` no `.claude/konoha.json`). Nunca escreva comando de publicar para o dono.
+4. Função do servidor: a pasta pronta e testada, com `verify_jwt` explícito no `supabase/config.toml`. Quem publica é o Tech Lead (`publicar_funcao` no `.claude/konoha.local.json`). Nunca escreva comando de publicar para o dono.
 
 ## Quando algo dá errado
 - **Premissa falsa** (o desenho supõe o que o código ou o banco não confirmam): pare o item e devolva com a prova. "Verificado, já estava correto" é resultado válido.

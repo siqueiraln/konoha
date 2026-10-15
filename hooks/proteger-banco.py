@@ -5,7 +5,7 @@ entrada padrão e responde:
 - produção, execute_sql e apply_migration: PASSA o que só acrescenta ou ajusta
   (inserir, mudar linhas com filtro, criar tabela, coluna, função, regra de
   acesso fechada) e o que apaga só dentro da empresa de teste (campo
-  empresa_teste do `.claude/konoha.json`). PERGUNTA, em português, o que apaga
+  empresa_teste do `.claude/konoha.local.json`). PERGUNTA, em português, o que apaga
   dado ou estrutura, muda todas as linhas, abre acesso, ou a trava não sabe
   traduzir (bloco DO, select que grava). Decisão do dono em 14/10/2026: ele não
   lê SQL, então o "pode" dele só vale onde ele consegue julgar ("apaga isto");
@@ -24,7 +24,7 @@ entrada padrão e responde:
   gravação pela API do Supabase e script que grava no Supabase: PERGUNTA;
 - toda pergunta diz em português o que a mudança faz, com ⚠️ no que é grave
   (traduzir.py). O dono não lê SQL: a tela é o que ele avalia;
-- projeto ESPELHO (campo banco_espelho do `.claude/konoha.json`: cópia da
+- projeto ESPELHO (campo banco_espelho do `.claude/konoha.local.json`: cópia da
   estrutura de produção, sem dado de cliente): consulta que grava, migration e
   publicar função pelas ferramentas do Supabase passam sem perguntar. É lá que os
   agentes mudam e testam o banco. Pelo terminal, o espelho pergunta como produção;
@@ -102,7 +102,7 @@ def ferramenta_supabase(ferramenta: str) -> bool:
 
 
 def alvo_e_espelho(ferramenta: str, entrada: dict, cwd: str) -> bool:
-    """A chamada vai para o projeto espelho do `.claude/konoha.json`?
+    """A chamada vai para o projeto espelho do `.claude/konoha.local.json`?
 
     Campo `banco_espelho`: {"ref": "<código do projeto>", "mcp": "<nome do servidor MCP ligado só nele>"}.
     Vale o nome do servidor (ferramentas `mcp__<mcp>__*`) ou o `project_id` da chamada,
@@ -145,7 +145,7 @@ def terminal_supabase_altera(comando: str) -> bool:
 # ---------------------------------------------------------------- n8n
 
 # Endereços de instâncias n8n que não têm "n8n" no nome vêm do projeto:
-# campo n8n_hosts do `.claude/konoha.json` (projeto.py).
+# campo n8n_hosts do `.claude/konoha.local.json` (projeto.py).
 
 N8N_LEITURA_MCP = re.compile(r"__(search_|get_|list_|validate_|explore_)\w*$")
 

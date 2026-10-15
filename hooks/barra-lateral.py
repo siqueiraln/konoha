@@ -2,7 +2,7 @@
 
 Gancho Stop do Claude Code. Roda quando a conversa vai terminar uma resposta e
 lê o registro dela (transcript). Só vale em projetos com `linear_time` no
-`.claude/konoha.json` (projeto.py) e só em conversas com trabalho: as que
+`.claude/konoha.local.json` (projeto.py) e só em conversas com trabalho: as que
 travaram uma tarefa no Linear com a própria marca (`c-<8 letras>`, a mesma do
 quadro-linear.py). Conversa só de pergunta não é mexida.
 

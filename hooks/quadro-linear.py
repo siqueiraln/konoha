@@ -12,7 +12,7 @@ A trava na descrição da tarefa carrega a marca `c-<8 letras>`, tirada do id
 interno da conversa. Com a marca o gancho acha as tarefas da conversa e a
 última atividade dela (a data do arquivo da conversa em ~/.claude/projects).
 
-Só roda em projetos com `linear_time` no `.claude/konoha.json` (projeto.py). Qualquer erro vira silêncio (nunca trava
+Só roda em projetos com `linear_time` no `.claude/konoha.local.json` (projeto.py). Qualquer erro vira silêncio (nunca trava
 a conversa); na abertura, vira uma linha dizendo que o quadro não veio.
 A chave vem de LINEAR_API_KEY (ambiente ou registro do Windows) e só vai para
 api.linear.app.
@@ -45,7 +45,7 @@ def marca(session_id: str) -> str:
 
 
 def time_da_pasta(cwd: str):
-    """O time do Linear do projeto, de `.claude/konoha.json` (campo linear_time)."""
+    """O time do Linear do projeto, de `.claude/konoha.local.json` (campo linear_time)."""
     return projeto.config(cwd).get("linear_time") or None
 
 

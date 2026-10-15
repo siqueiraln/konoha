@@ -85,7 +85,7 @@ cmd /c mklink /J "$env:USERPROFILE\.claude\empresa-agentes" "<pasta do projeto>"
 Depois, no projeto onde a vila vai trabalhar:
 
 - `.claude/settings.local.json` (fora do git, é seu): `{ "agent": "tech-lead" }`
-- `.claude/konoha.json` (no git do projeto): o que a vila precisa saber dele.
+- `.claude/konoha.local.json` (no git do projeto): o que a vila precisa saber dele.
 
 ```json
 {

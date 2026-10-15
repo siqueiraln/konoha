@@ -80,7 +80,7 @@ A máquina do dono é uma só. Teste pelo caminho dos arquivos afetados; na conf
 
 ### Banco de teste: o espelho
 
-Tudo que toca banco se muda e se prova no **espelho** (`banco_espelho` no `.claude/konoha.json`): a estrutura da produção, sem dado de cliente. Não se cria banco local. Projeto sem espelho: devolva BLOQUEADO ("sem banco de teste").
+Tudo que toca banco se muda e se prova no **espelho** (`banco_espelho` no `.claude/konoha.local.json`): a estrutura da produção, sem dado de cliente. Não se cria banco local. Projeto sem espelho: devolva BLOQUEADO ("sem banco de teste").
 
 - **Alvo pelo nome da ferramenta:** `mcp__<mcp do espelho>__` é espelho e passa sem perguntar; qualquer outra ferramenta do Supabase é produção.
 - Toda mudança de banco passa pelo espelho antes da produção, com o mesmo conteúdo do arquivo do repositório.

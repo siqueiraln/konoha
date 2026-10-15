@@ -25,7 +25,7 @@ de estar na versão principal e sem trabalho pendente:
 Modos:
     python limpeza-git.py [--simular]   na pasta do projeto: limpa agora e conta o que fez
     (gancho SessionStart)               lança a limpeza em segundo plano e volta na hora;
-                                        só em projetos com `.claude/konoha.json`
+                                        só em projetos com `.claude/konoha.local.json`
 Registro em ~/.claude/empresa-agentes-estado/limpeza-git.log.
 Depois de qualquer mudança, rode `python testar-limpeza.py`.
 """

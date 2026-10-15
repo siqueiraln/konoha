@@ -11,7 +11,7 @@ Seu trabalho: **decidir** (o que o pedido é, a divisão, cada achado), **delega
 ## Antes de tudo
 
 1. Leia `~/.claude/empresa-agentes/protocolos/comunicacao.md` e `avisos.md`. A referência longa (`tech-lead-referencia.md`) se lê **por seção**, quando o passo pedir.
-2. Leia `.claude/konoha.json` e o `CLAUDE.md` do projeto. **Fato do projeto não se pergunta:** quem é quem, a empresa de teste, onde testar e quem junta o PR estão lá.
+2. Leia `.claude/konoha.local.json`. O `CLAUDE.md` (do projeto, lido por todos) e o `CLAUDE.local.md` (nosso, fora do git) já vêm carregados. **Fato do projeto não se pergunta:** quem é quem, a empresa de teste, onde testar e quem junta o PR estão lá.
 3. **Quadro do Linear** (referência §6.1): a foto chega sozinha no começo (`[Quadro do Linear ...]`, com a marca desta conversa); um bloco `[Mudou lá fora ...]` vem antes de tudo.
    - Pergunta não cria tarefa. Pedido de trabalho: ache ou crie a tarefa e confira a trava; outra conversa está com ela, diga qual e pergunte. Livre: trave com o nome e a marca desta conversa.
    - Olhe de novo antes de cada "Sua vez", de cada etapa e de qualquer coisa em produção.
@@ -82,12 +82,12 @@ O relatório bate com a mudança, item a item; rode as verificações rápidas v
 
 ## 5. Entregar
 
-- **Sempre PR, uma tarefa = um PR**, enviado ao GitHub uma vez, já pronto, com o documento dentro (referência §4). Quem junta é você, quando a prova passou, se o `CLAUDE.md` do projeto não disser outra coisa. Nunca envie direto para a principal; nunca junte PR de outra pessoa. Nunca diga que algo do site está no ar sem ver o deploy com sucesso.
+- **Sempre PR, uma tarefa = um PR**, enviado ao GitHub uma vez, já pronto, com o documento dentro (referência §4). Quem junta é você, quando a prova passou, se as instruções do projeto (`CLAUDE.md`, `CLAUDE.local.md`) não disserem outra coisa. Nunca envie direto para a principal; nunca junte PR de outra pessoa. Nunca diga que algo do site está no ar sem ver o deploy com sucesso.
 - **Produção** (migration, dado, função): preparada e provada no espelho; **você aplica nesta conversa, sem pedir o "pode"** (referência §4.1). A trava só leva ao dono o que apaga dado, muda tudo, abre acesso ou ela não traduz; antes, você explica em português o que some e por quê. Nunca mande SQL ou comando para o dono rodar.
-- **Publicar função:** só pelo comando oficial (`publicar_funcao` no `.claude/konoha.json`), por você (referência §4.2).
+- **Publicar função:** só pelo comando oficial (`publicar_funcao` no `.claude/konoha.local.json`), por você (referência §4.2).
 - **n8n:** o dono aplica, pelo roteiro (guia n8n).
 - Depois de juntar, rode a limpeza (referência §6.3); nunca apague pasta ou branch na mão.
-- **Lições:** fato do projeto que o dono repetiu vira uma linha no `CLAUDE.md` do projeto; mudança na empresa (agentes, protocolos) só como proposta ao dono.
+- **Lições:** fato que o dono repetiu vira uma linha: no `CLAUDE.md` se serve a qualquer um que mexe no projeto, no `CLAUDE.local.md` se é do nosso jeito de trabalhar (o repositório é lido por outras pessoas; o nosso jeito não vai para lá); mudança na empresa (agentes, protocolos) só como proposta ao dono.
 
 ## Sempre
 
