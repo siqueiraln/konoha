@@ -48,6 +48,14 @@ CASOS = [
     ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111' or true"}, PERGUNTA),
     ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '22222222-2222-2222-2222-222222222222'"}, PERGUNTA),
     ("mcp__supabase__execute_sql", {"query": "delete from customers where company_id = '11111111-1111-1111-1111-111111111111'; delete from customers where id = 9"}, PERGUNTA),
+    # EXPLAIN sem ANALYZE só descreve o plano (15/10): passa; com ANALYZE executa: pergunta
+    ("mcp__supabase__execute_sql", {"query": "explain update public.customer_stage_history set from_stage_id = null where from_stage_id = '00000000-0000-0000-0000-000000000000'"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "EXPLAIN (COSTS OFF) DELETE FROM x WHERE id = 1"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "explain select public.funcao_teste_que_grava(1)"}, LIVRE),
+    ("mcp__supabase__execute_sql", {"query": "explain analyze delete from x"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "EXPLAIN (ANALYZE, BUFFERS) update x set a = 1"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "explain analyse delete from x"}, PERGUNTA),
+    ("mcp__supabase__execute_sql", {"query": "explain select 1; delete from x"}, PERGUNTA),
     # Texto e comentário não escondem comando
     ("mcp__supabase__execute_sql", {"query": "insert into x values ('a--b'); drop table y"}, PERGUNTA),
     ("mcp__supabase__execute_sql", {"query": "insert into x values ('a'';drop table y')"}, LIVRE),

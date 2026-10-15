@@ -256,6 +256,14 @@ def so_empresa_teste(bruto: str, limpo: str, empresa: str) -> bool:
     return bool(re.search(r"\bcompany_id\s*=\s*'" + re.escape(empresa.lower()) + "'", bruto.lower()))
 
 
+def so_explain(sql: str) -> bool:
+    """Tudo é EXPLAIN sem ANALYZE: o banco só descreve o plano e não executa nada (autorizado pelo dono em 15/10/2026)."""
+    limpos = [l for l in (traduzir._limpar(c) for c in comandos(sql)) if l]
+    return bool(limpos) and all(
+        re.match(r"explain\b", l) and not re.search(r"\banaly[sz]e\b", l) for l in limpos
+    )
+
+
 def mudanca_comum(sql: str, cwd: str) -> bool:
     """Só acrescenta ou ajusta, ou só apaga na empresa de teste? Então não precisa do dono."""
     empresa = (projeto.config(cwd).get("empresa_teste") or {}).get("id") or ""
@@ -298,6 +306,8 @@ def decidir(chamada: dict):
         if no_espelho and ferramenta.endswith(FERRAMENTAS_DE_BANCO):
             return None
         if ferramenta.endswith("__execute_sql"):
+            if so_explain(entrada.get("query", "")):
+                return None
             if sql_grava(entrada.get("query", "")):
                 if mudanca_comum(entrada.get("query", ""), cwd):
                     return None
