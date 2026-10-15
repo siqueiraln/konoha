@@ -133,7 +133,7 @@ def gravar_estado(session_id: str, estado: dict):
 
 def responder(evento: str, texto: str):
     if texto:
-        print(json.dumps({"hookSpecificOutput": {"hookEventName": evento, "additionalContext": texto}}, ensure_ascii=False))
+        print(json.dumps({"hookSpecificOutput": {"hookEventName": evento, "additionalContext": texto}}))
 
 
 # ---------------------------------------------------------------- consultas

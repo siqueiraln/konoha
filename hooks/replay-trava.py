@@ -31,9 +31,13 @@ def chamadas(dias, trecho="*"):
     limite = time.time() - dias * 86400
     base = os.path.join(os.path.expanduser("~"), ".claude", "projects")
     for arquivo in glob.glob(os.path.join(base, f"*{trecho}*" if trecho != "*" else "*", "**", "*.jsonl"), recursive=True):
-        if os.path.getmtime(arquivo) < limite:
+        try:
+            if os.path.getmtime(arquivo) < limite:
+                continue
+            f = open(arquivo, encoding="utf-8", errors="ignore")
+        except OSError:  # conversa apagada no meio, ou caminho longo demais para o Windows
             continue
-        with open(arquivo, encoding="utf-8", errors="ignore") as f:
+        with f:
             for linha in f:
                 try:
                     reg = json.loads(linha)

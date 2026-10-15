@@ -154,7 +154,7 @@ def main():
             + ". Carregue as ferramentas pelo ToolSearch se precisar (mcp__ccd_sidebar__list_groups, "
             "move_sessions, mcp__ccd_session_mgmt__set_session_title). Não mande mensagem nova ao dono por causa disso."
         )
-        print(json.dumps({"decision": "block", "reason": motivo}, ensure_ascii=False))
+        print(json.dumps({"decision": "block", "reason": motivo}))
 
 
 if __name__ == "__main__":

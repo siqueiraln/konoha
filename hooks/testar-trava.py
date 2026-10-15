@@ -199,6 +199,7 @@ def casos_de_traducao() -> int:
         ("create table public.novas (id uuid primary key); create index on novas (id);", False, "cria a tabela novas"),
         ("create or replace function public.f() returns int language sql as $$ delete from x $$", False, "cria ou troca a função f"),
         ("grant select on public.x to anon", True, "deixa quem não está logado usar a tabela x"),
+        ("select public.mensageria_virar('36b0cad8-bac9-4ed8-b5ae-07174b29f97e'::uuid, false);", False, "roda a função mensageria_virar do banco, que pode gravar dados"),
         ("revoke execute on function public.f(uuid, text) from public, anon, authenticated", False, "tira de todo mundo, quem não está logado, usuários logados o acesso à função f"),
     ]
     for sql, grave_esperado, trecho in exemplos:

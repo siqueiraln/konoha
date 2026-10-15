@@ -181,6 +181,8 @@ def _comando(s: str):
         return f"⚠️ apaga {m.group(1)} {_nome(m.group(2))}"
     if m := re.match(r"alter (function|type|view|sequence) " + N, s):
         return f"ajusta {m.group(1)} {_nome(m.group(2))}"
+    if s.startswith("select") and (nomes := re.findall(r"\bpublic\.(\w+)\s*\(", s)):
+        return "roda a função " + ", ".join(dict.fromkeys(nomes)) + " do banco, que pode gravar dados (a trava não vê o que ela faz por dentro)"
     if s.startswith("select") or s.startswith("do "):
         return "roda um comando do banco (a trava não traduz o que ele faz)"
     return f"outro comando que a trava não traduz: {' '.join(s.split()[:3])}"
@@ -208,6 +210,8 @@ def resumo_migration(sql: str, nome: str = ""):
         "⚠️ TEM ITEM GRAVE (apaga dados, apaga coisa usada ou abre acesso). Só aprove se o Tech Lead "
         "explicou, logo acima, em português, por que precisa e como volta atrás."
         if grave
+        else "Roda uma função do banco que pode gravar dados. Aprove se bate com o que o Tech Lead disse que ia fazer."
+        if any("pode gravar dados" in l for l in unicas)
         else "Nada aqui apaga dados. Aprove se bate com o que o Tech Lead disse que ia fazer."
     )
     return f"🔒 {titulo}\n{corpo}\n\n{fecho}", grave
