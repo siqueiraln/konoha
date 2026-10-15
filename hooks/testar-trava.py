@@ -66,6 +66,14 @@ CASOS = [
     ("Bash", {"command": "supabase db reset --linked"}, PERGUNTA),
     ("Bash", {"command": "psql $DATABASE_URL -c 'select 1'"}, PERGUNTA),
     ("Bash", {"command": "npm run test"}, LIVRE),
+    # Conector da conta com código no lugar do nome (aponta para a produção)
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"name": "x", "query": "drop function if exists agent_stage_counts(uuid)"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration", {"name": "x", "query": "alter table x add column y text"}, LIVRE),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"query": "delete from contatos"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql", {"query": "select 1"}, LIVRE),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__pause_project", {"project_id": "abc"}, PERGUNTA),
+    ("mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__list_tables", {}, LIVRE),
+    ("mcp__a7e36a6c-afd8-4b55-ab79-69e6574304eb__save_issue", {"title": "x"}, LIVRE),
     # n8n: MCP
     ("mcp__n8n__search_workflows", {}, LIVRE),
     ("mcp__claude_ai_n8n__get_workflow_details", {}, LIVRE),
@@ -244,9 +252,55 @@ def casos_de_publicacao() -> int:
     return falhas
 
 
+# Nomes reais que a trava precisa ver (o gancho só roda se o matcher pegar o nome).
+NOMES_REAIS = [
+    "mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__execute_sql",
+    "mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__apply_migration",
+    "mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__deploy_edge_function",
+    "mcp__1abde08f-964c-4aaf-8c6b-e0270e889ade__delete_branch",
+    "mcp__supabase-espelho__execute_sql",
+    "mcp__claude_ai_Supabase__apply_migration",
+    "mcp__n8n__execute_workflow",
+    "mcp__claude_ai_n8n__publish_workflow",
+    "Bash",
+    "PowerShell",
+]
+
+
+def casos_do_matcher() -> int:
+    """O gancho instalado no ~/.claude/settings.json pega todo nome que a trava trata?"""
+    import json
+    import re
+
+    config = pathlib.Path.home() / ".claude" / "settings.json"
+    try:
+        entradas = json.loads(config.read_text(encoding="utf-8")).get("hooks", {}).get("PreToolUse", [])
+    except (OSError, ValueError) as erro:
+        print(f"FALHOU matcher: não li {config} ({erro})")
+        return 1
+    instalados = [
+        e.get("matcher", "") for e in entradas
+        if any("proteger-banco.py" in (h.get("command") or "") for h in e.get("hooks", []))
+    ]
+    if not instalados:
+        print("FALHOU matcher: a trava não está registrada em PreToolUse do ~/.claude/settings.json")
+        return 1
+    falhas = 0
+    if trava.MATCHER not in instalados:
+        falhas += 1
+        print(f"FALHOU matcher: o instalado ({instalados}) é diferente do certo (MATCHER em proteger-banco.py)")
+    nomes = set(NOMES_REAIS) | {f for f, _, esperado in CASOS + CASOS_SEM_ESPELHO if esperado is not LIVRE}
+    for nome in sorted(nomes):
+        if not any(re.search(m, nome) for m in instalados):
+            falhas += 1
+            print(f"FALHOU matcher: a trava nunca roda para {nome} (o gancho instalado não pega esse nome)")
+    print(f"{len(nomes) + 1 - falhas}/{len(nomes) + 1} conferências do matcher certas")
+    return falhas
+
+
 def main() -> int:
     montar_pasta_teste()
-    falhas = casos_de_traducao() + casos_de_publicacao()
+    falhas = casos_de_traducao() + casos_de_publicacao() + casos_do_matcher()
     for ferramenta, entrada, esperado in CASOS:
         resultado = trava.decidir({"tool_name": ferramenta, "tool_input": entrada, "cwd": str(PASTA_TESTE)})
         obtido = resultado[0] if resultado else None

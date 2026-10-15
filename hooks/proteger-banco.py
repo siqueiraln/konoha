@@ -31,6 +31,11 @@ entrada padrão e responde:
 - ferramenta de banco de qualquer servidor MCP (execute_sql, apply_migration,
   deploy_edge_function) é tratada como Supabase, mesmo sem "supabase" no nome
   (o conector da conta aparece com um código no lugar do nome em algumas conversas);
+  no conector com código, as outras ações do Supabase que alteram também;
+- o gancho só roda se o `matcher` do ~/.claude/settings.json pegar o nome da
+  ferramenta. O matcher certo está em MATCHER abaixo; o testar-trava.py confere
+  que o instalado pega todo nome que a trava trata (furo de 15/10/2026: o conector
+  com código e o n8n ficavam de fora e iam à produção sem a trava);
 - qualquer outra coisa: não interfere.
 
 Buracos que continuam: `npm run <script>` (a trava não vê o que roda), função
@@ -44,6 +49,13 @@ import json
 import os
 import re
 import sys
+
+MATCHER = (
+    r"^mcp__.*([Ss]upabase|[Nn]8[Nn]|__(execute_sql|apply_migration|deploy_edge_function|"
+    r"create_branch|delete_branch|merge_branch|reset_branch|rebase_branch|restore_project|"
+    r"pause_project|create_project|update_storage_config|create_storage_bucket|delete_storage_bucket)$)"
+    r"|^Bash$|^PowerShell$"
+)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import projeto  # noqa: E402
@@ -95,9 +107,23 @@ FERRAMENTAS_SUPABASE_QUE_ALTERAM = re.compile(
 FERRAMENTAS_DE_BANCO = ("__execute_sql", "__apply_migration", "__deploy_edge_function")
 
 
-def ferramenta_supabase(ferramenta: str) -> bool:
+# Conector da conta com código no lugar do nome (mcp__1abde08f-...__): as ações do
+# Supabase que alteram valem por ele também.
+SERVIDOR_COM_CODIGO = re.compile(r"^mcp__[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}__")
+
+
+def ferramenta_supabase(ferramenta: str, entrada: dict | None = None) -> bool:
+    entrada = entrada or {}
     return ferramenta.startswith("mcp__") and (
-        "supabase" in ferramenta.lower() or ferramenta.endswith(FERRAMENTAS_DE_BANCO)
+        "supabase" in ferramenta.lower()
+        or ferramenta.endswith(FERRAMENTAS_DE_BANCO)
+        # outros conectores com código (Vercel) têm ações de mesmo nome; as do Supabase
+        # dizem o projeto ou a organização
+        or bool(
+            SERVIDOR_COM_CODIGO.match(ferramenta)
+            and FERRAMENTAS_SUPABASE_QUE_ALTERAM.search(ferramenta)
+            and ("project_id" in entrada or "organization_id" in entrada)
+        )
     )
 
 
@@ -301,7 +327,7 @@ def decidir(chamada: dict):
     entrada = chamada.get("tool_input", {}) or {}
     cwd = chamada.get("cwd", "")
 
-    if ferramenta_supabase(ferramenta):
+    if ferramenta_supabase(ferramenta, entrada):
         no_espelho = alvo_e_espelho(ferramenta, entrada, cwd)
         if no_espelho and ferramenta.endswith(FERRAMENTAS_DE_BANCO):
             return None
@@ -330,7 +356,12 @@ def decidir(chamada: dict):
             return ("ask", texto) if grave else None
         if FERRAMENTAS_SUPABASE_QUE_ALTERAM.search(ferramenta):
             acao = ferramenta.rsplit("__", 1)[-1]
-            onde = "no projeto ESPELHO (não é produção)" if no_espelho else "no Supabase de PRODUÇÃO"
+            if no_espelho:
+                onde = "no projeto ESPELHO (não é produção)"
+            elif "supabase" in ferramenta.lower():
+                onde = "no Supabase de PRODUÇÃO"
+            else:
+                onde = "num serviço conectado (Supabase de PRODUÇÃO ou outro)"
             return (
                 "ask",
                 f"🔒 Mudança {onde} ({acao}). Não é uma mudança de dados comum: "
