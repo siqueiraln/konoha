@@ -12,11 +12,11 @@ Lida por seção, quando o passo pede. Caminhos da empresa: `~/.claude/empresa-a
 ### 1.2 Conserto pontual (um defeito, sem decisão de produto)
 1. Causa antes do conserto (Pesquisador, ou Implementador em depuração, uma hipótese por vez). O "bug" é o sistema fazendo o que foi decidido? É mudança de regra: vai para o PO.
 2. Pista; Implementador reproduz ao vivo, conserta na causa (os irmãos com o mesmo defeito só se o dono pediu) e prova que sumiu.
-3. Conferência da pista; documento no mesmo PR; PR (§4).
+3. Conferência da pista (mudou o que o usuário vê: Designer antes e depois); documento no mesmo PR; PR (§4).
 
 ### 1.3 Projeto (algo novo ou mudança de regra)
 1. PO: documento de projeto, direto ao dono (ninguém testa o plano). Dono aprova.
-2. Designer, se há tela nova (esboços das decisivas → dono aprova). Arquiteto, se mexe em banco ou função: costura e no máximo três fatias, numa chamada. Security no desenho, só na pista completa.
+2. Designer, se muda o que o usuário vê (esboços das decisivas → dono aprova; confere a tela pronta no fim). Arquiteto, se mexe em banco ou função: costura e no máximo três fatias, numa chamada. Security no desenho, só na pista completa.
 3. Linha de base (§5.3). Implementador, uma fatia por chamada, cada uma provada ao vivo. Nada entre as fatias.
 4. No fim, uma vez: Testes (pista completa) e Revisor (normal e completa). Quem achou reconfere só o que devolveu.
 5. Docs no mesmo PR; a história do documento roda de ponta a ponta com você olhando; PR (§4).

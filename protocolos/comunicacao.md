@@ -100,6 +100,8 @@ O Tech Lead escolhe a pista antes de começar e diz qual em cada instrução. Na
 | **Normal** (o padrão, inclusive banco e função do servidor) | Qualquer funcionalidade | Arquiteto (só se mexe em banco ou função) + Implementador (prova ao vivo) + Revisor (uma leitura, no fim) |
 | **Completa** | Dinheiro, dado de cliente, quem vê o quê entre empresas, apagar dados, ou "faz com cuidado" | Arquiteto + Security (uma vez, no desenho) + Implementador + Testes (uma vez, no fim) + Revisor (uma vez, no fim) |
 
+**Mudou o que o usuário vê** (tela nova, botão, campo, texto, posição, mesmo num ajuste pequeno), em qualquer pista: Designer antes de construir (decide como fica) e depois (confere a tela pronta com print). Sem isso, a tela não vai ao dono nem ao PR.
+
 No máximo três fatias por tarefa. Quem conferiu reconfere só o que devolveu. Trava a entrega só o que a mudança criou e impede o combinado de funcionar.
 
 Ao terminar: `Testado: <o quê> — <passou/falhou>`.
