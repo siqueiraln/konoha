@@ -1,56 +1,40 @@
 # Guia: tela em React
 
-Lido por seção. O Arquiteto e o Implementador leem só a seção que a tarefa toca.
-Stack de referência: React + Vite, `@tanstack/react-query`, `react-router-dom`, `react-hook-form` + `zod`, `@supabase/supabase-js`. Em projeto existente, o que o projeto já usa vence este guia; divergência vira pergunta, não troca silenciosa.
-
-O visual e o comportamento de tela (estados, textos, erros) são do `DESIGN.md` do projeto e do `telas.md` do designer. Este guia trata de como o código da tela é organizado.
-
----
+Lido por seção: leia só a que a tarefa toca. Stack de referência: React + Vite, `@tanstack/react-query`, `react-router-dom`, `react-hook-form` + `zod`, `@supabase/supabase-js`. Em projeto existente, o que o projeto já usa vence este guia; divergência vira pergunta, não troca silenciosa. Visual e comportamento de tela são do `DESIGN.md` e do `telas.md`.
 
 ## 1. A tela não fala direto com o banco
-
-- **Componente e página nunca chamam `supabase.from`, `.rpc` ou `functions.invoke`.** O acesso a dados mora em hooks por domínio (`src/hooks/<dominio>/`), um por operação. Num projeto real, ~45 componentes falando direto com o banco foram a origem de boa parte da lógica duplicada.
-- **Um hook por operação, usado por todas as telas.** Se duas telas gravam a mesma entidade, as duas usam o mesmo hook, que usa o caminho único de escrita do desenho.
-- **Antes de criar um hook, procure** um que já faça a operação (`src/hooks/`, busca pelo nome da tabela ou da função). Hook que só repassa `supabase.from()` sem regra nenhuma não se paga; o que se paga é o hook que concentra a regra.
-- **Regra de negócio pura** (cálculo, formatação de domínio, validação compartilhada) mora em `src/lib/<dominio>/`, sem React, testável sozinha.
+- Componente e página nunca chamam `supabase.from`, `.rpc` ou `functions.invoke`. O acesso a dados mora em hooks por domínio (`src/hooks/<dominio>/`), um por operação, usado por todas as telas e pelo caminho único de escrita do desenho.
+- Antes de criar um hook, procure um que já faça a operação (`src/hooks/`, pelo nome da tabela ou da função).
+- Regra de negócio pura (cálculo, validação compartilhada) mora em `src/lib/<dominio>/`, sem React.
 
 ## 2. Leitura e escrita com react-query
-
-- **Leitura:** `useQuery`. Nunca `useState` + `useEffect` + busca manual; isso reimplementa o react-query, pior.
-- **Escrita:** `useMutation`.
-- **Chaves de consulta numa fábrica por domínio** (`leadKeys.all`, `leadKeys.detail(id)`), nunca escritas à mão em cada tela.
-- **Toda escrita declara o que ela desatualiza.** No desenho, cada ação diz: "grava X, invalida as chaves Y e Z". Tela que mostra dado velho depois de salvar é esquecimento de invalidação.
-- **Atualização otimista** (a tela muda antes do servidor confirmar) só em ação frequente e reversível (marcar, arrastar, alternar). Se o servidor recusar, a tela volta e mostra o erro no lugar. Ação com consequência (pagamento, envio, exclusão) espera a confirmação.
-- **Clique duplo:** o botão fica desabilitado e mostra que está trabalhando enquanto a escrita roda (`isPending`); a escrita também é à prova de repetição no banco. Os dois, não um só.
+- Leitura com `useQuery`, escrita com `useMutation`. Nunca `useState` + `useEffect` para buscar dado.
+- Chaves numa fábrica por domínio (`leadKeys.all`, `leadKeys.detail(id)`), nunca escritas à mão.
+- Toda escrita declara o que desatualiza: "grava X, invalida as chaves Y e Z", como está no desenho.
+- Atualização otimista só em ação frequente e reversível (marcar, arrastar). Pagamento, envio e exclusão esperam a confirmação.
+- Clique duplo: botão desabilitado com `isPending` **e** escrita à prova de repetição no banco. Os dois.
 
 ## 3. Formulários
-
-- `react-hook-form` + `zod`. O schema `zod` é a regra de validação da tela, e as mensagens estão na língua do usuário ("Informe o telefone com DDD"), nunca "Invalid input".
-- Erro de validação e erro do servidor aparecem **no campo**, não só num aviso que some. Erro do servidor que não é de um campo aparece junto do botão que falhou.
-- O que foi digitado nunca se perde por erro.
-- A validação da tela **não substitui** a do banco. O banco valida de novo (restrições, regras de acesso, função).
+- `react-hook-form` + `zod`, com mensagens em português ("Informe o telefone com DDD").
+- Erro aparece no campo; erro do servidor que não é de campo aparece junto do botão. O que foi digitado não se perde.
+- A validação da tela não substitui a do banco.
 
 ## 4. Permissão na tela
-
-- A tela **reflete** a permissão do banco: esconde ou desabilita (dizendo por quê) o que a pessoa não pode fazer. A decisão é do banco; a tela usa a mesma fonte (papel do usuário vindo do banco), nunca uma regra própria diferente.
-- Botão que aparece e dá erro de permissão ao clicar é defeito.
+A tela esconde ou desabilita (dizendo por quê) o que a pessoa não pode, usando a mesma fonte do banco (papel vindo do banco), nunca uma regra própria. Botão que aparece e dá erro de permissão é defeito.
 
 ## 5. Dados, datas e listas
-
-- **Tipos** vêm dos tipos gerados do banco (`Database`), e dos schemas `zod` para formulário. Sem `as` para calar erro de tipo.
-- **Datas:** o banco guarda com fuso; a tela formata sempre por uma função única do projeto, no fuso da empresa ou do usuário (o desenho diz qual). Nunca `new Date()` solto para decidir "hoje".
-- **Listas longas:** paginação ou virtualização (`@tanstack/react-virtual`) quando a lista pode passar de algumas centenas de itens. Não antes.
-- **Tempo real** (Supabase Realtime) só quando o desenho pede; a assinatura é aberta e fechada pelo hook, e o que chega atualiza o cache do react-query, não um estado paralelo.
+- Tipos gerados do banco (`Database`) e schemas `zod`. Sem `as` para calar erro de tipo.
+- Datas formatadas por uma função única do projeto, no fuso que o desenho diz. Nunca `new Date()` solto para decidir "hoje".
+- Paginação ou virtualização só quando a lista pode passar de algumas centenas de itens.
+- Tempo real (Supabase Realtime) só quando o desenho pede: o hook abre e fecha a assinatura, e o que chega atualiza o cache do react-query.
 
 ## 6. Organização
-
-- Página em `src/pages/`, componentes do domínio em `src/components/<dominio>/`, peças visuais compartilhadas em `src/components/ui/`, hooks em `src/hooks/<dominio>/`, regra pura em `src/lib/<dominio>/`.
-- **Nomes pelo domínio** (`useCriarLead`, `leadKeys`), com os termos do `CONTEXT.md`.
-- **Estado de tela** (`useState`) só para o que é da tela: painel aberto, aba escolhida, texto sendo digitado. Dado do servidor fica no react-query.
-- Rota nova: a autorização da página é conferida na própria rota, não só no menu.
+- Páginas em `src/pages/`, componentes do domínio em `src/components/<dominio>/`, peças compartilhadas em `src/components/ui/`, hooks em `src/hooks/<dominio>/`, regra pura em `src/lib/<dominio>/`.
+- Nomes pelo domínio (`useCriarLead`, `leadKeys`), com os termos do `CONTEXT.md`.
+- `useState` só para o que é da tela; dado do servidor fica no react-query.
+- Rota nova confere a autorização na própria rota, não só no menu.
 
 ## 7. Portão antes de declarar pronto
-
 - Nenhum acesso a dados fora dos hooks.
 - Toda escrita com invalidação declarada e botão protegido contra clique duplo.
 - Nenhum componente novo que o mapa do `DESIGN.md` já tinha.

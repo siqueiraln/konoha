@@ -1,11 +1,9 @@
 # Modelo: rodada de overclock
 
-Arquivo do projeto: `docs/projetos/<nome-do-projeto>/overclock-<AAAA-MM-DD>.md`.
-
-Escrito para o dono, em linguagem simples. Cada proposta mostra o que é possível e que ele talvez não soubesse.
+Arquivo: `docs/projetos/<nome-do-projeto>/overclock-<AAAA-MM-DD>.md`. Para o dono, em linguagem simples.
 
 ```markdown
-# Overclock: <nome do projeto> — <data>
+# Overclock: <nome do projeto>, <data>
 
 Baseado em: <versão do produto que está rodando> · pesquisa em `<caminho do arquivo do Pesquisador>`
 
@@ -28,6 +26,6 @@ Baseado em: <versão do produto que está rodando> · pesquisa em `<caminho do a
 
 ## Regras
 
-- **Da mais barata e comprovada para a mais ousada.** Primeiro o que aproveita o que já existe, depois o que exige coisa nova.
-- **Entre 3 e 7 propostas.** Mais que isso, você não fez o filtro.
-- **Descartadas ficam escritas**, com o motivo. A mesma ideia não volta como novidade na próxima rodada.
+- **Da mais barata e comprovada para a mais ousada:** primeiro o que aproveita o que já existe.
+- **Entre 3 e 7 propostas.**
+- **Descartadas ficam escritas**, com o motivo, para não voltarem como novidade.

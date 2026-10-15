@@ -1,25 +1,20 @@
 # Modelo: manual de estilo do produto (`DESIGN.md`)
 
-Arquivo do projeto: `DESIGN.md` na raiz. Todo agente que mexe em tela lê antes de começar. Quando a tela discorda do manual, a tela está errada.
-
-Duas camadas:
-- **Do produto:** cores, fontes, espaçamentos, tom. Cada produto tem a sua identidade.
-- **Da empresa:** comportamentos (estados, verbos, erros, confirmações). Iguais em todo produto, copiados de `~/.claude/empresa-agentes/modelos/design.md` e só alterados com decisão do dono.
+Arquivo: `DESIGN.md` na raiz. Todo agente que mexe em tela lê antes. Tela que discorda do manual está errada. A camada do produto (cores, fontes, espaçamentos, tom) muda por produto; as regras da empresa são iguais em todos e só mudam com decisão do dono.
 
 ```markdown
 # Manual de estilo: <produto>
 
 ## Visão geral
-<Em 3 a 5 linhas: para quem é, que sensação a tela passa, o que ela nunca parece.
+<3 a 5 linhas: para quem é, que sensação passa, o que nunca parece.
 Anti-referências: produtos com que não queremos parecer.>
 
 ## Tokens
-Fonte da verdade: `design/tokens.tokens.json` (formato Design Tokens 2025.10,
-com tema claro e escuro). Aqui só o resumo e o uso.
+Fonte da verdade: `design/tokens.tokens.json`. Aqui só o resumo e o uso.
 
 | Token | Valor | Uso |
 |-------|-------|-----|
-| `color.primary` | #... | ação principal — no máximo uma por área da tela |
+| `color.primary` | #... | ação principal, no máximo uma por área da tela |
 | ... | | |
 
 ## Cores
@@ -39,11 +34,11 @@ Mapa do que já existe. Antes de criar, procure aqui.
 |------------|-----------|-------------|---------------|
 | Tabela de dados | `src/components/...` | listas com mais de 5 colunas | ... |
 
-Regra das 3 vezes: algo que aparece 3 vezes com o mesmo propósito vira componente
+Regra das 3 vezes: o que aparece 3 vezes com o mesmo propósito vira componente
 compartilhado e entra nesta tabela.
 
 ## Faça e não faça
-<Regras com nome, no formato abaixo. Uma a três por assunto.>
+<Regras com nome, uma a três por assunto.>
 
 ---
 

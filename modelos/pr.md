@@ -1,6 +1,6 @@
 # Modelo: pedido de junção (PR)
 
-Um PR por tarefa do Linear (referência do Tech Lead, §4). Quem lê é o dono, no celular, decidindo se junta. Tudo o que não ajuda nessa decisão fica fora: já está no documento do projeto, no ADR, no andamento e nas provas.
+Um PR por tarefa do Linear (referência do Tech Lead, §4). Quem lê é quem junta e o dono, no celular. O detalhe já está no documento do projeto, no ADR, no andamento e nas provas.
 
 **Título:** o mesmo da tarefa do Linear (a frase de WhatsApp), com o código no fim: `<Área>: <o que muda para quem usa> (STR-nn)`.
 
@@ -15,7 +15,7 @@ Um PR por tarefa do Linear (referência do Tech Lead, §4). Quem lê é o dono, 
 **Detalhe:** <documento do projeto ou do módulo> · <ADR, se houver>
 ```
 
-Enquanto o PR depende de mudança em produção ainda não aplicada, ele é rascunho e a linha "Antes de juntar" diz o quê (referência §4).
+O PR só abre quando a mudança em produção de que ele depende já foi aplicada (referência §4).
 
 **Proibido no corpo** (vai para o andamento ou para a pasta de provas, nunca para o PR): lista de testes e contagens, tabela de arquivos ou funções tocadas, comandos SQL, códigos de conferência, portão de pertencimento e varredura de consumidores, histórico do que já foi aplicado e quando, trechos de relatório de agente.
 
