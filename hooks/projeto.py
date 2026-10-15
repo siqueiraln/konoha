@@ -26,19 +26,49 @@ import os
 ARQUIVOS = (os.path.join(".claude", "konoha.local.json"), os.path.join(".claude", "konoha.json"))
 
 
+def _ler(pasta: str):
+    """A configuração desta pasta (a local antes da versionada), {} se quebrada, None se não houver."""
+    for arquivo in ARQUIVOS:
+        caminho = os.path.join(pasta, arquivo)
+        if os.path.isfile(caminho):
+            try:
+                with open(caminho, encoding="utf-8") as f:
+                    dados = json.load(f)
+                return dados if isinstance(dados, dict) else {}
+            except (OSError, ValueError):
+                return {}
+    return None
+
+
+def _pasta_principal(worktree: str):
+    """Pasta de trabalho separada (git worktree) aponta, no arquivo `.git`, para o repositório principal."""
+    try:
+        with open(os.path.join(worktree, ".git"), encoding="utf-8") as f:
+            linha = f.readline().strip()
+    except OSError:
+        return None
+    if not linha.startswith("gitdir:"):
+        return None
+    gitdir = os.path.normpath(linha[len("gitdir:"):].strip())
+    partes = gitdir.split(os.sep)
+    if ".git" in partes and "worktrees" in partes:
+        return os.sep.join(partes[: partes.index(".git")]) or None
+    return None
+
+
 def config(cwd: str) -> dict:
-    """Sobe de `cwd` até achar a configuração (a local antes da versionada). {} se não achar ou se estiver quebrada."""
+    """Sobe de `cwd` até achar a configuração. Numa pasta de trabalho separada (git worktree, que não leva
+    o arquivo local, fora do git), usa a da pasta principal do repositório. {} se não achar."""
     atual = os.path.abspath(cwd or ".")
     for _ in range(12):
-        for arquivo in ARQUIVOS:
-            caminho = os.path.join(atual, arquivo)
-            if os.path.isfile(caminho):
-                try:
-                    with open(caminho, encoding="utf-8") as f:
-                        dados = json.load(f)
-                    return dados if isinstance(dados, dict) else {}
-                except (OSError, ValueError):
-                    return {}
+        dados = _ler(atual)
+        if dados is not None:
+            return dados
+        if os.path.isfile(os.path.join(atual, ".git")):
+            principal = _pasta_principal(atual)
+            dados = _ler(principal) if principal else None
+            if dados is not None:
+                return dados
         pai = os.path.dirname(atual)
         if pai == atual:
             break
